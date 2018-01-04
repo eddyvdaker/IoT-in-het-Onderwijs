@@ -1,4 +1,8 @@
+"""
+Starts the application
+"""
 from Loggers import KeyboardLogger
+
 from time import sleep
 
 
