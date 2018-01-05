@@ -26,3 +26,6 @@ class KeyLogger:
 
     def get_log(self):
         return self.key_list
+
+    def get_info(self):
+        return {'name': 'Keyboard Logger', 'description': 'Logs all keyboard pressed during the session.'}
