@@ -1,8 +1,8 @@
 """
 This modules contains all code used to render the GUI and make it functional
 """
-from Loggers.KeyboardLogger import KeyboardLogger
-from Loggers.WindowLogger import WindowLogger
+from Trackers.KeyboardLogger import KeyboardLogger
+from Trackers.WindowLogger import WindowLogger
 from tkinter import *
 from time import strftime
 import json
