@@ -5,7 +5,7 @@ This module allows for the logging of keystrokes
 import keyboard
 
 
-class KeyLogger:
+class KeyboardLogger:
 
     def __init__(self):
         self.recording = None
@@ -27,4 +27,5 @@ class KeyLogger:
         return self.key_list
 
     def get_info(self):
-        return {'name': 'Keyboard Logger', 'description': 'Logs all keyboard pressed during the session.'}
+        return {'name': 'Keyboard Logger',
+                'description': 'Logs all keyboard pressed during the session.'}

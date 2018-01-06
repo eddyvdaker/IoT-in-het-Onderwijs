@@ -36,7 +36,7 @@ class WindowLogger:
     def logging(self):
         while self.running:
             time.sleep(1)
-            new_window = self.get_current_process().decode('utf-8')
+            new_window = self.get_current_window().decode('utf-8')
 
             if new_window == self.current_window:
                 pass
@@ -48,25 +48,11 @@ class WindowLogger:
                 self.current_window = new_window
                 self.windows_log.append([new_window, time.time()])
 
-    def get_current_process(self):
-        foreground_handle = self.user32.GetForegroundWindow()
+    def get_current_window(self):
+        handle = self.user32.GetForegroundWindow()
 
-        # Get process ID
-        pid = c_ulong(0)
-        self.user32.GetWindowThreadProcessId(foreground_handle, byref(pid))
-        process_id = "%d" % pid.value
+        title = create_string_buffer(b"\x00" * 512)
+        self.user32.GetWindowTextA(handle, byref(title), 512)
 
-        # Get executable
-        executable = create_string_buffer(b"\x00" * 512)
-        h_process = self.kernel32.OpenProcess(0x400 | 0x10, False, pid)
-        self.psapi.GetModuleBaseNameA(h_process, None, byref(executable), 512)
-
-        # Read window title
-        window_title = create_string_buffer(b"\x00" * 512)
-        length = self.user32.GetWindowTextA(foreground_handle,
-                                            byref(window_title), 512)
-
-        self.kernel32.CloseHandle(foreground_handle)
-        self.kernel32.CloseHandle(h_process)
-
-        return window_title.value
+        self.kernel32.CloseHandle(handle)
+        return title.value
