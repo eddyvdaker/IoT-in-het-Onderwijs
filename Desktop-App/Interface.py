@@ -1,7 +1,8 @@
 """
 This modules contains all code used to render the GUI and make it functional
 """
-from Loggers.KeyboardLogger import KeyLogger
+from Loggers.KeyboardLogger import KeyboardLogger
+from Loggers.WindowLogger import WindowLogger
 from tkinter import *
 from time import strftime
 import json
@@ -45,7 +46,7 @@ class App:
         self.study_activities = self.get_study_activities()
 
         # Create list of logger objects
-        self.loggers = [KeyLogger()]
+        self.loggers = [KeyboardLogger(), WindowLogger()]
         self.loggers_to_run = []
         self.loggers_to_run_at_start = []
 
