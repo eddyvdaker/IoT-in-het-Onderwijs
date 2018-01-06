@@ -21,9 +21,7 @@ class KeyLogger:
     def convert_log(self):
         for keypress in self.recording:
             if keypress.event_type == 'down':
-                key = keypress.name
-                timestamp = keypress.time
-                self.key_list.append([key, timestamp])
+                self.key_list.append([keypress.name, keypress.time])
 
     def get_log(self):
         return self.key_list

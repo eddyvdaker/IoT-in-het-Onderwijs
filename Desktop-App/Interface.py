@@ -130,6 +130,6 @@ class App:
 
     # Writes the logs to a results file
     def store_logs(self, logs):
-        output_file = f'results-{strftime("_%Y-%m-%d_%H-%M")}.json'
+        output_file = f'results{strftime("_%Y-%m-%d_%H-%M")}.json'
         with open(output_file, 'w') as file:
             json.dump(logs, file, sort_keys=True, indent=4)
