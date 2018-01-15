@@ -145,6 +145,16 @@ public class LearningActivityAdapter extends RecyclerView.Adapter<LearningActivi
                 }
             }
         });
+
+        holder.buttonStopwatchExtend.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                // Extend stopwatch time by 5 minutes
+                timeLeftInMillis += 5 * 60000;
+                countDownTimer.cancel();
+                startTimer(timeLeftInMillis, holder.textViewStopwatchTime);
+            }
+        });
     }
 
     @Override
@@ -242,43 +252,6 @@ public class LearningActivityAdapter extends RecyclerView.Adapter<LearningActivi
         String timeLeftFormatted = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
         textViewStopwatchCountDown.setText(timeLeftFormatted);
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     // Edit learning activity
     public void onCreateLearningActivityDialog(Context context, final LearningActivity learningActivity) {
