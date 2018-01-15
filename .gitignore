@@ -5,3 +5,5 @@ _pycache_
 *.swp
 .idea
 result_*.json
+
+Raspberry-App/\.ftpconfig
