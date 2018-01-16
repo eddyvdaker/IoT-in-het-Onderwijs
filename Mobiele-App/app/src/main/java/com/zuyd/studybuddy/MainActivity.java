@@ -3,6 +3,7 @@ package com.zuyd.studybuddy;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -18,6 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
+    private boolean[] fabEnabled; // todo: dirty fix
 
     private RecyclerView recyclerView;
     private RecyclerView.Adapter adapter;
@@ -33,10 +35,18 @@ public class MainActivity extends AppCompatActivity {
 
         // Floating Action button
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        this.fabEnabled = new boolean[1];
+        this.fabEnabled[0] = true;
+
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onCreateLearningActivityDialog();
+                if (fabEnabled[0]) {
+                    onCreateLearningActivityDialog();
+                } else {
+                    Snackbar snackbar = Snackbar.make(view, "Stop de leeractiviteit voordat je een ander wil toevoegen", Snackbar.LENGTH_LONG);
+                    snackbar.show();
+                }
             }
         });
 
@@ -52,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
         listLearningActivities = dbHandler.getAllLearningActivities();
 
         // adapter
-        adapter = new LearningActivityAdapter(listLearningActivities, this, dbHandler);
+        adapter = new LearningActivityAdapter(listLearningActivities, this, dbHandler, fabEnabled);
         recyclerView.setAdapter(adapter);
     }
 
@@ -87,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                         listLearningActivities = dbHandler.getAllLearningActivities();
 
                         // todo: dirty-fix: recreate all cards
-                        adapter = new LearningActivityAdapter(listLearningActivities, MainActivity.this, dbHandler);
+                        adapter = new LearningActivityAdapter(listLearningActivities, MainActivity.this, dbHandler, fabEnabled);
                         recyclerView.setAdapter(adapter);
                     }
                 })
