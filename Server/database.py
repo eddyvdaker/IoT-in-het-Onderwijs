@@ -33,13 +33,13 @@ def create_db():
             name 			TEXT NOT NULL
         );
         """, """
-        CREATE TABLE module(
+        CREATE TABLE lesson_module(
             id 				TEXT PRIMARY KEY NOT NULL,
             name 			TEXT NOT NULL,
             description 	TEXT NOT NULL
         );
         """, """
-        CREATE TABLE activity(
+        CREATE TABLE study_activity(
             id 				INTEGER PRIMARY KEY AUTOINCREMENT,
             studentid 		INTEGER NOT NULL,
             moduleid 		TEXT NOT NULL,
@@ -49,13 +49,14 @@ def create_db():
             category 		TEXT,
             notes 			TEXT,
             status 			TEXT,
+            time_est        TEXT,
 
             FOREIGN KEY(studentid) REFERENCES student(id),
-            FOREIGN KEY(moduleid) REFERENCES module(id),
+            FOREIGN KEY(moduleid) REFERENCES lesson_module(id),
             FOREIGN KEY(teacherid) REFERENCES teacher(id)
         );
         """, """
-        CREATE TABLE session(
+        CREATE TABLE study_session(
             id 				INTEGER PRIMARY KEY AUTOINCREMENT,
             eventid 		INTEGER NOT NULL,
             start_time 		TEXT NOT NULL,
@@ -63,7 +64,7 @@ def create_db():
             collected_data 	TEXT,
             date 			TEXT NOT NULL,
 
-            FOREIGN KEY(eventid) REFERENCES event(id)
+            FOREIGN KEY(eventid) REFERENCES study_activity(id)
         );"""]
     for command in commands:
         db_cursor.execute(command)
