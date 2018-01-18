@@ -61,11 +61,19 @@ def create_db():
             eventid 		INTEGER NOT NULL,
             start_time 		TEXT NOT NULL,
             stop_time 		TEXT,
-            collected_data 	TEXT,
-            date 			TEXT NOT NULL,
+            session_date 	TEXT NOT NULL,
 
             FOREIGN KEY(eventid) REFERENCES study_activity(id)
-        );"""]
+        );""","""
+        CREATE TABLE session_data(
+			id				INTEGER PRIMARY KEY AUTOINCREMENT,
+			sessionid		INTEGER NOT NULL,
+			sessiondata		TEXT,
+			data_type		TEXT,
+			
+			FOREIGN KEY(sessionid) REFERENCES study_session(id)
+        ); 
+        """]
     for command in commands:
         db_cursor.execute(command)
     db.commit()

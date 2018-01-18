@@ -2,7 +2,7 @@
 StudyBuddy Server
 """
 
-from flask import Flask
+from flask import abort, Flask, jsonify, request
 
 from database import *
 from queries import *
@@ -16,7 +16,7 @@ def homepage():
 
 
 """
-Retrieving data
+Retrieving Data API Calls
 """
 
 
@@ -34,6 +34,13 @@ def get_study_event():
     pass
 
 
+# Get a list of all study sessions linked to a study event
+# Used as 'GET /sessions?id=<eventID>'
+@app.route('/sessions', methods=['GET'])
+def get_study_sessions():
+    pass
+
+
 # Get details of a session, includes the data generated for that session
 # Used as 'GET /session?id=<sessionID>'
 @app.route('/session', methods=['GET'])
@@ -41,8 +48,43 @@ def get_study_session():
     pass
 
 
+# Get a list of data objects belonging to a study session:
+# Used as 'GET /data_list?id=<sessionID>'
+# Optionally include a type:
+# Used as: 'GET /data_list?id=<sessionID>&type=<data_type?>'
+@app.route('/data_list', methods=['GET'])
+def get_data_list():
+    pass
+
+
+# Get data from a data object
+# Used as 'GET /data?id=<dataID>'
+@app.route('/data', methods=['GET'])
+def get_data():
+    pass
+
+
 """
-Posting new data
+Session API Calls
+"""
+
+
+# Toggle (start/top) session for a set eventID
+# Used as 'GET /toggle_session?id=<eventID>'
+@app.route('/toggle_session', methods=['GET'])
+def toggle_session():
+    pass
+
+
+# Check if a session has been started for a studentID
+# Used as 'GET /check_session?id=<studentID>'
+@app.route('/check_session', methods=['GET'])
+def check_session():
+    pass
+
+
+"""
+Posting New Data API Calls
 """
 
 
@@ -51,21 +93,35 @@ Posting new data
 # category, notes, status}'
 @app.route('/event', methods=['POST'])
 def new_study_event():
-    pass
+    if not request.json:
+        abort(400)
+    event_details = request.json
 
 
-# Start a new study session
-# Used as 'POST /start_session {eventID, start time, date}
-@app.route('/start_session', methods=['POST'])
-def start_study_session():
-    pass
+
+"""
+Testing Calls
+"""
 
 
-# Stop a currently ongoing study session
-# Used as 'POST /stop_session {eventID, stop time, date, collected data}
-@app.route('/stop_session', methods=['POST'])
-def stop_study_session():
-    pass
+# Test if the receiving post request with json objects is working
+# Used as 'POST /testing_post JSON_OBJECT'
+@app.route('/testing_post', methods=['POST'])
+def test_post():
+    if not request.json:
+        abort(400)
+    post = request.json
+    print(f'testing post: {post}')
+    return jsonify(post)
+
+
+# Test if get requests are working with passing variables
+# Used as 'GET /testing_get?var=<test_variable>'
+@app.route('/testing_get', methods=['GET'])
+def test_get():
+    var = request.args.get('var')
+    print(f'testing get: {var}')
+    return var
 
 
 """
