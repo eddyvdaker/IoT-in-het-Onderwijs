@@ -74,6 +74,29 @@ public class DbHandler extends SQLiteOpenHelper {
         db.close();
     }
 
+    // CREATE: add new multiple records to db
+    public void addLearningActivities(List<LearningActivity> learningActivities) {
+        // get reference to writable DB
+        SQLiteDatabase db = getWritableDatabase();
+
+        // init record values
+        for(int i=0; i < learningActivities.size(); i++) {
+            ContentValues values = new ContentValues();
+
+            values.put(COLUMN_TITLE, learningActivities.get(i).getTitle());
+            values.put(COLUMN_DESCRIPTION, learningActivities.get(i).getDescription());
+            values.put(COLUMN_DURATION, learningActivities.get(i).getDuration());
+            values.put(COLUMN_CREATIONTIMESTAMP, learningActivities.get(i).getCreationTimestamp());
+            values.put(COLUMN_FOLDERLOCATION, learningActivities.get(i).getFolderLocation());
+
+            // query
+            db.insert(TABLE_LEARNINGACTIVITIES, null, values);
+        }
+
+        // write to db
+        db.close();
+    }
+
     // READ: read all uncompleted records from db
     public List<LearningActivity> getAllLearningActivities() {
         List<LearningActivity> learningActivities = new LinkedList<LearningActivity>();

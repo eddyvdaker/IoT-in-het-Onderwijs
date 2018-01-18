@@ -1,6 +1,8 @@
 package com.zuyd.studybuddy;
 
 import android.content.DialogInterface;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -15,7 +17,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
     private FloatingActionButton fab;
@@ -26,6 +37,17 @@ public class MainActivity extends AppCompatActivity {
 
     private List<LearningActivity> listLearningActivities;
     private DbHandler dbHandler;
+
+    // connection
+    private ConnectivityManager connectivityManager;
+    private NetworkInfo activeNetwork;
+    private boolean isConnected;
+    private boolean isWifi;
+
+    // REST-handler
+    private HTTPGetRequest getRequest;
+    private HTTPPostRequest setRequest;
+    private String urlCentralServer;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,8 +80,91 @@ public class MainActivity extends AppCompatActivity {
         // create dbHandler-object
         dbHandler = new DbHandler(this, null, null, 1);
 
-        // get all learning activities
-        listLearningActivities = dbHandler.getAllLearningActivities();
+        // get connection status info
+        // todo: refactor into a method so it can be called asynchronous
+        connectivityManager = (ConnectivityManager)this.getSystemService(this.CONNECTIVITY_SERVICE);
+        connectivityManager.getActiveNetworkInfo();
+        activeNetwork = connectivityManager.getActiveNetworkInfo();
+        isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
+        isWifi = activeNetwork != null && activeNetwork.getType() == ConnectivityManager.TYPE_WIFI;
+
+        List<LearningActivity> localListLearningActivities = dbHandler.getAllLearningActivities();
+
+        if (isConnected) {
+            /// GET-Request from external server
+            // set URL central server
+            Map<String, String> urlCentralServer = new HashMap<String, String>();
+            urlCentralServer.put("GETLearningActivities", "http://www.mocky.io/v2/5a5de5f43300007a141919ac"); // todo: change to server ip
+//            urlCentralServer.put("SETLearningActivity", ??);
+
+            // instantiate instance of HTTPGetRequest class
+            HTTPGetRequest getRequest = new HTTPGetRequest();
+            HTTPPostRequest setRequest = new HTTPPostRequest();
+
+            // Perform doInBackground
+            try {
+                String result = getRequest.execute(urlCentralServer.get("GETLearningActivities")).get();
+
+                try {
+                    JSONArray jsonArray = new JSONArray(result);
+                    int jsonArrayLength = jsonArray.length();
+
+                    // morph json-object into workable LearningActivity object
+                    List<LearningActivity> remoteListLearningActivities = new LinkedList<LearningActivity>();
+
+                    for(int i=0; i<jsonArrayLength; i++) {
+                        // create, init, and add learningActivity object to learningActivities List
+//                        Gson gson = new Gson();
+                        LearningActivity learningActivity = new LearningActivity();
+//                        gson.from
+//                        learningActivity = gson.fromJson(jsonArray.get(i), Learning());
+
+                        learningActivity.setTitle(jsonArray.getJSONObject(i).getString("title"));
+                        learningActivity.setDuration(Integer.parseInt(jsonArray.getJSONObject(i).getString("duration")));
+                        learningActivity.setDescription(jsonArray.getJSONObject(i).getString("description"));
+                        learningActivity.setId(Integer.parseInt(jsonArray.getJSONObject(i).getString("id")));
+
+                        // todo: set other data -> first refactor with documented key-value entries. -> use Gson-api to convert it into a java Learning Activity class?
+
+                        remoteListLearningActivities.add(learningActivity);
+                    }
+
+                    // sync not-synced local Learning activities
+                    List<LearningActivity> toSyncLearningActivities= new LinkedList<LearningActivity>();
+                    int sizelocalListLearningActivities = localListLearningActivities.size();
+                    for (int i=0; i < sizelocalListLearningActivities; i++) {
+                        if (!remoteListLearningActivities.contains(localListLearningActivities.get(i))) {
+                            toSyncLearningActivities.add(localListLearningActivities.get(i));
+                        }
+                    }
+
+                    // todo: POST-Request to remote server
+                    for (LearningActivity learningActivity : toSyncLearningActivities) {
+                        Gson gson = new Gson();
+                        String jsonLearningActivity = gson.toJson(learningActivity);
+                        setRequest.execute(jsonLearningActivity, urlCentralServer.get("SETLearningActivity"));
+                    }
+
+                    // save data into local db
+                    // todo: clean local db first! -> create class-method!
+                    listLearningActivities = remoteListLearningActivities; //todo: GET-request
+                    dbHandler.addLearningActivities(listLearningActivities); // todo: what to do when writing to db fails?
+                } catch (JSONException e) {
+                    e.getCause();
+                    isConnected = false;
+                    //todo: show error-message
+                }
+            } catch(ExecutionException|InterruptedException e) {
+                e.printStackTrace();
+                isConnected = false;
+                //todo: show error-message
+            }
+        }
+
+        if (!isConnected) {
+            // get data from internal db
+            listLearningActivities = localListLearningActivities;
+        }
 
         // adapter
         adapter = new LearningActivityAdapter(listLearningActivities, this, dbHandler, fabEnabled);
