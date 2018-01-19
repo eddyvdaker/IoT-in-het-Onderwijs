@@ -103,7 +103,7 @@ def execute_read_query(db, command):
 
 def create_test_data(db):
     commands = ["""
-	INSERT INTO teacher (name) VALUES ('test_docent1');
+    INSERT INTO teacher (name) VALUES ('test_docent1');
     """, """
     INSERT INTO teacher (name) VALUES ('test_docent2');
     """, """
@@ -156,7 +156,7 @@ def create_test_data(db):
     INSERT INTO session_data (sessionid, sessiondata, data_type) VALUES (3, '["Window 1", 1516287763.125039], ["Window 3", 1516287772.1310387]', 'Windows');
     """, """
     INSERT INTO session_data (sessionid, sessiondata, data_type) VALUES (3, '[25, 25, 25, 26, 27, 26]', 'Temperature');
-	"""]
+    """]
     db_cursor = db.cursor()
     for command in commands:
         db_cursor.execute(command)
