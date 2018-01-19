@@ -181,7 +181,7 @@ if __name__ == '__main__':
     while not check_db():
         i += 1
         print('Database not found, creating new database...')
-        create_db()
+        create_db(1)
         if i >= 5:
             print('Error: cannot create database!')
             exit()
