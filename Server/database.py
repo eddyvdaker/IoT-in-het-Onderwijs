@@ -160,4 +160,4 @@ def create_test_data(db):
     db_cursor = db.cursor()
     for command in commands:
         db_cursor.execute(command)
-    db_cursor.commit()
+    db.commit()
