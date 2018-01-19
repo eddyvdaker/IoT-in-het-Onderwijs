@@ -86,7 +86,13 @@ def initialize_db():
     return connect(DB_SETTING.get('database', 'file_name'))
 
 
-def execute_query(db, command):
+def execute_write_query(db, command):
     db_cursor = db.cursor()
     db_cursor.execute(command)
     db.commit()
+
+
+def execute_read_query(db, command):
+    db_cursor = db.cursor()
+    db_cursor.execute(command)
+    return db_cursor.fetchall()

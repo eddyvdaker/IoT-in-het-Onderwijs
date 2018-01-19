@@ -24,28 +24,57 @@ Retrieving Data API Calls
 # Used as 'GET /events?id=<studentID>'
 @app.route('/events', methods=['GET'])
 def get_study_events():
-    pass
+    student_id = request.args.get('id')
+    query = get_study_events_query(student_id)
+    data = execute_read_query(db, query)
+    cleaned_data = []
+    for row in data:
+        cleaned_data.append(list(row)[0])
+    return jsonify({'events': cleaned_data})
 
 
 # Get details of a specific study event, contains a list of sessions
 # Used as 'GET /event?id=<eventID>'
 @app.route('/event', methods=['GET'])
 def get_study_event():
-    pass
+    event_id = request.args.get('id')
+    query = get_study_event_query(event_id)
+    data = list(execute_read_query(db, query)[0])
+    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
+               'description', 'category', 'notes', 'activity_status',
+               'time_est']
+    cleaned_data = {}
+    for i, col in enumerate(data):
+        cleaned_data.update({columns[i]: col})
+    return jsonify(cleaned_data)
 
 
 # Get a list of all study sessions linked to a study event
 # Used as 'GET /sessions?id=<eventID>'
 @app.route('/sessions', methods=['GET'])
 def get_study_sessions():
-    pass
+    event_id = request.args.get('id')
+    query = get_study_sessions_query(event_id)
+    data = execute_read_query(db, query)
+    cleaned_data = []
+    for row in data:
+        cleaned_data.append(list(row)[0])
+    return jsonify({'sessions': cleaned_data})
 
 
 # Get details of a session, includes the data generated for that session
 # Used as 'GET /session?id=<sessionID>'
 @app.route('/session', methods=['GET'])
 def get_study_session():
-    pass
+    session_id = request.args.get('id')
+    query = get_study_session_query(session_id)
+    data = list(execute_read_query(db, query)[0])
+    columns = ['id', 'activityid', 'start_time', 'stop_time', 'session_date']
+    cleaned_data = {}
+    for i, col in enumerate(data):
+        cleaned_data.update({columns[i]: col})
+    print(cleaned_data)
+    return jsonify(cleaned_data)
 
 
 # Get a list of data objects belonging to a study session:
@@ -54,14 +83,30 @@ def get_study_session():
 # Used as: 'GET /data_list?id=<sessionID>&type=<data_type?>'
 @app.route('/data_list', methods=['GET'])
 def get_data_list():
-    pass
+    session_id = request.args.get('id')
+    query = get_data_list_query(session_id)
+    data = execute_read_query(db, query)
+    cleaned_data = []
+    for row in data:
+        cleaned_data.append(list(row)[0])
+    print(cleaned_data)
+    return jsonify({'data list': cleaned_data})
 
 
 # Get data from a data object
 # Used as 'GET /data?id=<dataID>'
 @app.route('/data', methods=['GET'])
 def get_data():
-    pass
+    data_id = request.args.get('id')
+    query = get_data_query(data_id)
+    data = list(execute_read_query(db, query)[0])
+    print(data)
+    columns = ['id', 'sessionid', 'sessiondata', 'data_type']
+    cleaned_data = {}
+    for i, col in enumerate(list(data)):
+        cleaned_data.update({columns[i]: col})
+    print(cleaned_data)
+    return jsonify(cleaned_data)
 
 
 """
