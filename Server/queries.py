@@ -8,12 +8,16 @@ Direct API Call Queries
 """
 
 
-def get_study_events_query(student_id):
+def get_study_events_list_query(student_id):
     return f'SELECT id FROM study_activity WHERE studentid = {student_id};'
 
 
 def get_study_event_query(event_id):
     return f'SELECT * FROM study_activity WHERE id = {event_id};'
+
+
+def get_study_events_query(student_id):
+    return f'SELECT * FROM study_activity WHERE studentid = {student_id};'
 
 
 def get_study_sessions_query(event_id):

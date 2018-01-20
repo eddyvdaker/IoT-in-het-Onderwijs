@@ -21,11 +21,11 @@ Retrieving Data API Calls
 
 
 # Get a list of study events for a certain student ID
-# Used as 'GET /events?id=<studentID>'
-@app.route('/events', methods=['GET'])
-def get_study_events():
+# Used as 'GET /events_list?id=<studentID>'
+@app.route('/events_list', methods=['GET'])
+def get_study_events_list():
     student_id = request.args.get('id')
-    query = get_study_events_query(student_id)
+    query = get_study_events_list_query(student_id)
     data = execute_read_query(db, query)
     cleaned_data = []
     for row in data:
@@ -47,6 +47,23 @@ def get_study_event():
     for i, col in enumerate(data):
         cleaned_data.update({columns[i]: col})
     return jsonify(cleaned_data)
+
+
+@app.route('/events', methods=['GET'])
+def get_study_events():
+    student_id = request.args.get('id')
+    query = get_study_events_query(student_id)
+    data =execute_read_query(db, query)
+    cleaned_data = []
+    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
+               'description', 'category', 'notes', 'activity_status',
+               'time_est']
+    for row in data:
+        new_row = {}
+        for y, col in enumerate(list(row)):
+            new_row.update({columns[y]: col})
+        cleaned_data.append(new_row)
+    return jsonify({'events': cleaned_data})
 
 
 # Get a list of all study sessions linked to a study event
