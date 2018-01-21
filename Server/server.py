@@ -155,10 +155,23 @@ Posting New Data API Calls
 # category, notes, status}'
 @app.route('/event', methods=['POST'])
 def new_study_event():
+    # Check if request is a json object
     if not request.json:
         abort(400)
-    event_details = request.json
+    data = request.json
 
+    # Convert teacher short name into teacher id
+    teacherid_query = get_teacher_id_from_short_query(data['teacherid'])
+    teacherid = str(execute_read_query(db, teacherid_query)[0][0])
+    data['teacherid'] = teacherid
+
+    # Create query and execute it
+    query = new_study_event_query(data)
+    if query != 'ERROR':
+        execute_write_query(db, query)
+        return jsonify(data)
+    else:
+        return jsonfiy({'error': 'Invalid data entered'})
 
 
 """
@@ -170,8 +183,11 @@ Testing Calls
 # Used as 'POST /testing_post JSON_OBJECT'
 @app.route('/testing_post', methods=['POST'])
 def test_post():
+    print(request.content_type)
     if not request.json:
+        print(111)
         abort(400)
+    print(222)
     post = request.json
     print(f'testing post: {post}')
     return jsonify(post)
