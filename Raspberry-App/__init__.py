@@ -4,22 +4,37 @@ from communication import main as comms
 from queue import Queue
 import time
 
-def main():
+class controller:
+	"""docstring for ."""
+	def __init__(self):
+		self.recording = False
 
-	sensors_queue = Queue()
-	sensors_thread = Thread(target=sensors,args=(sensors_queue))
-	sensors_thread.daemon = True
-	sensors_thread.start()
+		self.sensors_queue = Queue()
+		self.sensors_thread = Thread(target=sensors,args=(self.sensors_queue))
+		self.sensors_thread.daemon = True
+		self.sensors_thread.start()
 
-	comms_queue = Queue()
-	comms_thread = Thread(target=comms,args=(comms_queue))
-	comms_thread.daemon = True
-	comms_thread.start()
+		self.comms_queue = Queue()
+		self.comms_thread = Thread(target=comms,args=(self.comms_queue))
+		self.comms_thread.daemon = True
+		self.comms_thread.start()
 
-	while True:
-		comms_queue.get()
-		time.sleep(60)
+		self.loop()
 
+	def loop(self):
+		while True:
+			cur = comms_queue.get()
+			if cur[] == "x":
+				self.recording = True
+			elif cur[] == "y":
+				self.recording = False
+			time.sleep(60)
+
+	def startRec(self):
+		pass
+
+	def stopRec(self):
+		pass
 
 if __name__ == '__main__':
-	main()
+	instance = controller()
