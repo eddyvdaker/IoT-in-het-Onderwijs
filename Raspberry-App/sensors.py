@@ -13,7 +13,7 @@ class sensors():
 		self.ky018Instance = ky018.ky018(pin=3)
 
 	def refresh(self):
-		self.ky038Result = self.ky038Instance.read()
+		# self.ky038Result = self.ky038Instance.read()
 		self.dht11Result = self.dht11Instance.read()
 		self.ky018Result = self.ky018Instance.read()
 
@@ -35,9 +35,7 @@ class sensors():
 
 	def getSound(self):
 		# todo get avaerage loudness over time
-		# self.ky038Instance.listen(60)
-		# return self.ky038Result
-		pass
+		return self.ky038Instance.listen(6)
 
 	def getLight(self):
 		# todo get avaerage loudness over time
@@ -48,7 +46,7 @@ class sensors():
 			self.refresh()
 			print(self.getTemp())
 			print(self.getHum())
-			# print(self.getSound())
+			print(self.getSound())
 			print(self.getLight())
 			time.sleep(1)
 
