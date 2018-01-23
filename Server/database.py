@@ -130,8 +130,6 @@ def create_test_data(db):
     """, """
     INSERT INTO study_session (activityid, start_time, session_date) VALUES (2, '08:00', '2018-01-18');
     """, """
-    UPDATE study_session SET stop_time = '10:45' WHERE id = 2;
-    """, """
     INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '23:30', '2018-01-20');
     """, """
     UPDATE study_session SET stop_time = '01:00' WHERE id = 3;

@@ -2,10 +2,8 @@
 Generates different queries needed to get the relevant data.
 """
 
-
-"""
-Direct API Call Queries
-"""
+from time import time
+from datetime import datetime
 
 
 def get_study_events_list_query(student_id):
@@ -36,12 +34,26 @@ def get_data_query(data_id):
     return f'SELECT * FROM session_data WHERE id = {data_id}'
 
 
-def toggle_session_query(event_id):
-    return f'DB QUERY'
+def get_teacher_id_from_short_query(short):
+    return f'SELECT id FROM teacher WHERE short = \'{short}\''
 
 
-def check_session_query(student_id):
-    return f'DB QUERY'
+def get_status_from_activity_query(event_id):
+    return f'SELECT activity_status FROM study_activity WHERE id = {event_id}'
+
+
+def get_all_started_activities_query(student_id):
+    return f'SELECT id FROM study_activity WHERE ' \
+           f'activity_status = \'started\' and studentid = {student_id}'
+
+
+def get_session_with_null_stop_time_query(event_id):
+    return f'SELECT id FROM study_session WHERE activityid = {event_id} ' \
+           f'and stop_time is NULL'
+
+
+def get_event_student_id_query(event_id):
+    return f'SELECT studentid FROM study_activity WHERE id = {event_id}'
 
 
 def new_study_event_query(json_object):
@@ -77,8 +89,22 @@ def new_study_event_query(json_object):
 
         fields_query += field['name']
 
-    return f'INSERT INTO study_activity ({fields_query}) VALUES ({data_query});'
+    return f'INSERT INTO study_activity ({fields_query}) VALUES ' \
+           f'({data_query});'
 
 
-def get_teacher_id_from_short_query(short):
-    return f'SELECT id FROM teacher WHERE short = \'{short}\''
+def new_study_session_query(event_id):
+    current_date = str(datetime.now().isoformat())[0:10]
+    return f'INSERT INTO study_session (activityid, session_date, ' \
+           f'start_time) VALUES ({event_id}, \'{current_date}\', ' \
+           f'{time()})'
+
+
+def update_activity_status_query(event_id, new_status):
+    return f'UPDATE study_activity SET activity_status = \'{new_status}\' ' \
+           f'WHERE id = {event_id}'
+
+
+def update_session_stop_time_query(session_id):
+    return f'UPDATE study_session SET stop_time = \'{time()}\' ' \
+           f'WHERE id = {session_id}'

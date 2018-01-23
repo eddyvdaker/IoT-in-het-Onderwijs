@@ -3,6 +3,7 @@ StudyBuddy Server
 """
 
 from flask import abort, Flask, jsonify, request
+from os import remove
 
 from database import *
 from queries import *
@@ -90,7 +91,6 @@ def get_study_session():
     cleaned_data = {}
     for i, col in enumerate(data):
         cleaned_data.update({columns[i]: col})
-    print(cleaned_data)
     return jsonify(cleaned_data)
 
 
@@ -106,7 +106,6 @@ def get_data_list():
     cleaned_data = []
     for row in data:
         cleaned_data.append(list(row)[0])
-    print(cleaned_data)
     return jsonify({'data list': cleaned_data})
 
 
@@ -117,12 +116,10 @@ def get_data():
     data_id = request.args.get('id')
     query = get_data_query(data_id)
     data = list(execute_read_query(db, query)[0])
-    print(data)
     columns = ['id', 'sessionid', 'sessiondata', 'data_type']
     cleaned_data = {}
     for i, col in enumerate(list(data)):
         cleaned_data.update({columns[i]: col})
-    print(cleaned_data)
     return jsonify(cleaned_data)
 
 
@@ -135,7 +132,49 @@ Session API Calls
 # Used as 'GET /toggle_session?id=<eventID>'
 @app.route('/toggle_session', methods=['GET'])
 def toggle_session():
-    pass
+    # Get student eventID and studentID
+    event_id = request.args.get('id')
+    student_id_query = get_event_student_id_query(event_id)
+    student_id = list(execute_read_query(db, student_id_query)[0])[0]
+
+    # Get other started eventIDs
+    started_events_query = get_all_started_activities_query(student_id)
+    started_events = [list(x)[0] for x in execute_read_query(db, started_events_query)]
+
+    # If current event already started, set to paused, if not set to started
+    if int(event_id) in started_events:
+        new_status = 'paused'
+        session_query = get_session_with_null_stop_time_query(event_id)
+        session = list(execute_read_query(db, session_query)[0])[0]
+        session_update_query = update_session_stop_time_query(session)
+        execute_write_query(db, session_update_query)
+        print('paused session...')
+    else:
+        new_status = 'started'
+        new_session_query = new_study_session_query(event_id)
+        execute_write_query(db, new_session_query)
+        print('started session...')
+
+    # Update event status
+    event_update_query = update_activity_status_query(event_id, new_status)
+    execute_write_query(db, event_update_query)
+
+    for event in started_events:
+        if event != int(event_id):
+            # Update status of other events
+            current_event_update_query = update_activity_status_query(event, 'paused')
+            execute_write_query(db, current_event_update_query)
+
+            # Get sessions and set stop time if needed
+            sessions_query = get_session_with_null_stop_time_query(event)
+            sessions = execute_read_query(db, sessions_query)
+
+            for session in sessions:
+                current_session = list(session)[0]
+                session_update_query = update_session_stop_time_query(current_session)
+                execute_write_query(db, session_update_query)
+
+    return jsonify({'new status': new_status})
 
 
 # Check if a session has been started for a studentID
@@ -143,6 +182,19 @@ def toggle_session():
 @app.route('/check_session', methods=['GET'])
 def check_session():
     pass
+
+
+# Stop the session
+# Used as 'GET /stop_session?id=<eventID>'
+@app.route('/stop_session', methods=['GET'])
+def stop_session():
+    event_id = request.args.get('id')
+    event_update_query = update_activity_status_query(event_id, 'completed')
+    execute_write_query(db, event_update_query)
+
+    session_query = get_session_with_null_stop_time_query(event_id)
+    execute_write_query(db, session_query)
+    return jsonify({'new status': 'completed'})
 
 
 """
@@ -171,7 +223,7 @@ def new_study_event():
         execute_write_query(db, query)
         return jsonify(data)
     else:
-        return jsonfiy({'error': 'Invalid data entered'})
+        return jsonify({'error': 'Invalid data entered'})
 
 
 """
@@ -183,13 +235,9 @@ Testing Calls
 # Used as 'POST /testing_post JSON_OBJECT'
 @app.route('/testing_post', methods=['POST'])
 def test_post():
-    print(request.content_type)
     if not request.json:
-        print(111)
         abort(400)
-    print(222)
     post = request.json
-    print(f'testing post: {post}')
     return jsonify(post)
 
 
@@ -198,7 +246,6 @@ def test_post():
 @app.route('/testing_get', methods=['GET'])
 def test_get():
     var = request.args.get('var')
-    print(f'testing get: {var}')
     return var
 
 
@@ -207,6 +254,7 @@ Start Server
 """
 
 if __name__ == '__main__':
+    remove('database.sqlite3')
     print('Starting StudyBuddy Server...')
 
     print('Initializing database...')
