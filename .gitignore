@@ -5,5 +5,5 @@ _pycache_
 *.swp
 .idea
 result_*.json
-
+*.sqlite3
 Raspberry-App/\.ftpconfig
