@@ -1,7 +1,8 @@
 from threading import Thread
 from sensors import main as sensors
-from web_server import main as web_server
+from communication import main as comms
 from queue import Queue
+import time
 
 def main():
 
@@ -10,10 +11,15 @@ def main():
 	sensors_thread.daemon = True
 	sensors_thread.start()
 
-	web_server_queue = Queue()
-	web_server_thread = Thread(target=web_server,args=(web_server_queue))
-	web_server_thread.daemon = True
-	web_server_thread.start()
+	comms_queue = Queue()
+	comms_thread = Thread(target=comms,args=(comms_queue))
+	comms_thread.daemon = True
+	comms_thread.start()
+
+	while True:
+		comms_queue.get()
+		time.sleep(60)
+
 
 if __name__ == '__main__':
 	main()

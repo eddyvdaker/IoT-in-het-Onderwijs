@@ -1,31 +1,35 @@
-from os import curdir
-from os.path import join as pjoin
-from http.server import BaseHTTPRequestHandler, HTTPServer
+import httplib
+import json
 
-class StoreHandler(BaseHTTPRequestHandler):
+class comm:
+	"""docstring for comm."""
+	def __init__(self):
+		self.conn = httplib.HTTPConnection("ts.guydols.nl:5000")
 
-	def do_GET(self):
-		if self.path == '/':
-			with open(self.index, 'rb') as fh:
-				self.send_response(200)
-				self.send_header('Content-type', self.content_type(self.path))
-				self.end_headers()
-				self.wfile.write(fh.read())
-		elif self.path == '/':
-			with open(self.index, 'rb') as fh:
-				self.send_response(200)
-				self.send_header('Content-type', self.content_type(self.path))
-				self.end_headers()
-				self.wfile.write(fh.read())
+	def getCommand(self):
+		self.conn.request("GET","/check_sessions?id=1")
+		res = self.conn.getresponse()
+		if res.status == "200":
+			data = json.loads(res.read())
+			return data
+		else:
+			return None
 
-	def do_POST(self):
-		if self.path == '/store.json':
-			length = self.headers['content-length']
-			data = self.rfile.read(int(length))
-			with open(self.store_path, 'w') as fh:
-				fh.write(data.decode())
-			self.send_response(200)
+	def postData(self):
+		self.conn.request("GET","/blabla")
+		res = self.conn.getresponse()
+		if res.status == "200":
+			data = json.load(res.read())
+			return data
+		else:
+			return None
 
-def main():
-	server = HTTPServer(('0.0.0.0', 8080), StoreHandler)
-	server.serve_forever()
+def main(comms_queue):
+	comm = comm()
+	while True:
+		cmd = comm.getCommand()
+		if cmd == None:
+			pass
+		else:
+			comms_queue.put(cmd)
+		time.sleep(60)
