@@ -91,16 +91,16 @@ print(f'1. \tCheck activity 2 status before stopping \t- {t1}')
 
 # TEST 2    - CHECK ACTIVITY 2 SESSIONS BEFORE STOPPING
 t2 = session_status(2, None)
-print(f'1. \tCheck session 2 status before stopping \t\t- {t2}')
+print(f'2. \tCheck session 2 status before stopping \t\t- {t2}')
 
 # TEST 2    - STOP ACTIVITY 2
 t3 = stop_activity(2, 'completed')
-print(f'1. \tStop activity 2 \t\t\t\t\t\t\t- {t3}')
+print(f'3. \tStop activity 2 \t\t\t\t\t\t\t- {t3}')
 
 # TEST 1    - CHECK ACTIVITY 2 STATUS BEFORE STOPPING
 t4 = event_status(2, 'completed')
-print(f'1. \tCheck activity 2 status before stopping \t- {t4}')
+print(f'4. \tCheck activity 2 status before stopping \t- {t4}')
 
 # TEST 2    - CHECK ACTIVITY 2 SESSIONS BEFORE STOPPING
 t5 = session_status(2, 'SOME_TIME')
-print(f'1. \tCheck session 2 status before stopping \t\t- {t5}')
+print(f'5. \tCheck session 2 status before stopping \t\t- {t5}')

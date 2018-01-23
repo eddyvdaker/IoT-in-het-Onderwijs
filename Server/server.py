@@ -148,12 +148,10 @@ def toggle_session():
         session = list(execute_read_query(db, session_query)[0])[0]
         session_update_query = update_session_stop_time_query(session)
         execute_write_query(db, session_update_query)
-        print('paused session...')
     else:
         new_status = 'started'
         new_session_query = new_study_session_query(event_id)
         execute_write_query(db, new_session_query)
-        print('started session...')
 
     # Update event status
     event_update_query = update_activity_status_query(event_id, new_status)
@@ -181,7 +179,20 @@ def toggle_session():
 # Used as 'GET /check_session?id=<studentID>'
 @app.route('/check_session', methods=['GET'])
 def check_session():
-    pass
+    session_id = None
+    status = 'stopped'
+
+    student_id = request.args.get('id')
+    events_query = get_all_started_activities_query(student_id)
+    events = execute_read_query(db, events_query)
+
+    if len(events) == 1:
+        event = list(events[0])[0]
+        session_id_query = get_session_with_null_stop_time_query(event)
+        session_id = list(execute_read_query(db, session_id_query)[0])[0]
+        status = 'running'
+
+    return jsonify({'status': status, 'id': session_id})
 
 
 # Stop the session
@@ -199,6 +210,13 @@ def stop_session():
     execute_write_query(db, session_update_query)
 
     return jsonify({'new status': 'completed'})
+
+
+# Upload data belonging to a session, usualy after the session is stopped
+# Used as 'POST /upload_data {data_type, sessiondata, sessionid}'
+@app.route('/upload_data', methods=['POST'])
+def upload_data():
+    pass
 
 
 """
