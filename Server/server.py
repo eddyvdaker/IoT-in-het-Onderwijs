@@ -185,15 +185,19 @@ def check_session():
 
 
 # Stop the session
-# Used as 'GET /stop_session?id=<eventID>'
-@app.route('/stop_session', methods=['GET'])
+# Used as 'GET /stop_activity?id=<eventID>'
+@app.route('/stop_activity', methods=['GET'])
 def stop_session():
     event_id = request.args.get('id')
     event_update_query = update_activity_status_query(event_id, 'completed')
     execute_write_query(db, event_update_query)
 
     session_query = get_session_with_null_stop_time_query(event_id)
-    execute_write_query(db, session_query)
+    session = list(execute_read_query(db, session_query)[0])[0]
+
+    session_update_query = update_session_stop_time_query(session)
+    execute_write_query(db, session_update_query)
+
     return jsonify({'new status': 'completed'})
 
 
