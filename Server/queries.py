@@ -47,6 +47,13 @@ def get_all_started_activities_query(student_id):
            f'activity_status = \'started\' and studentid = {student_id}'
 
 
+def get_all_started_and_paused_activities_query(student_id):
+    return f'SELECT id FROM study_activity WHERE ' \
+           f'(activity_status = \'started\' or ' \
+           f'activity_status = \'paused\') ' \
+           f'and studentid = {student_id}'
+
+
 def get_session_with_null_stop_time_query(event_id):
     return f'SELECT id FROM study_session WHERE activityid = {event_id} ' \
            f'and stop_time is NULL'

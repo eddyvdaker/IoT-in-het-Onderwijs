@@ -200,14 +200,19 @@ def check_session():
 @app.route('/stop_activity', methods=['GET'])
 def stop_session():
     event_id = request.args.get('id')
+
+    event_status_query = get_study_event_query(event_id)
+    status = list(execute_read_query(db, event_status_query)[0])
+
     event_update_query = update_activity_status_query(event_id, 'completed')
     execute_write_query(db, event_update_query)
 
-    session_query = get_session_with_null_stop_time_query(event_id)
-    session = list(execute_read_query(db, session_query)[0])[0]
+    if 'started' in status:
+        session_query = get_session_with_null_stop_time_query(event_id)
+        session = list(execute_read_query(db, session_query)[0])[0]
 
-    session_update_query = update_session_stop_time_query(session)
-    execute_write_query(db, session_update_query)
+        session_update_query = update_session_stop_time_query(session)
+        execute_write_query(db, session_update_query)
 
     return jsonify({'new status': 'completed'})
 
