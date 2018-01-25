@@ -232,8 +232,6 @@ def upload_data():
     return jsonify(data)
 
 
-
-
 """
 Posting New Data API Calls
 """
