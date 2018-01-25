@@ -115,3 +115,8 @@ def update_activity_status_query(event_id, new_status):
 def update_session_stop_time_query(session_id):
     return f'UPDATE study_session SET stop_time = \'{time()}\' ' \
            f'WHERE id = {session_id}'
+
+
+def new_data_query(session_id, data, data_type):
+    return f'INSERT INTO session_data (sessionid, sessiondata, data_type) ' \
+           f'VALUES ({session_id}, \"{data}\", \"{data_type}\")'

@@ -221,7 +221,17 @@ def stop_session():
 # Used as 'POST /upload_data {data_type, sessiondata, sessionid}'
 @app.route('/upload_data', methods=['POST'])
 def upload_data():
-    pass
+    if not request.json:
+        abort(400)
+    data = request.json
+
+    query = new_data_query(data['sessionid'], data['sessiondata'],
+                           data['data_type'])
+    execute_write_query(db, query)
+
+    return jsonify(data)
+
+
 
 
 """
