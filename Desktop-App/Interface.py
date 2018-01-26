@@ -1,5 +1,5 @@
 """
-This modules contains all code used to render the GUI and make it functional
+This modules contains all code used to render the GUI and make it functional.
 """
 from Trackers.KeyboardLogger import KeyboardLogger
 from Trackers.WindowLogger import WindowLogger
