@@ -86,7 +86,7 @@ class App:
             checkbox.grid(row=i, sticky='w')
             self.loggers_to_run.append(var)
 
-            self.check_thread = Thread(self.check_for_session())
+        self.check_thread = Thread(self.check_for_session())
 
 # Start running the GUI
 def start(self):
