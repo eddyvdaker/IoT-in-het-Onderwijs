@@ -31,7 +31,6 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
     private List<StudyActivity> listStudyActivities;
     private Context context;
     private boolean[] fabEnabled;
-    private boolean startTimer;
 
     public void setHolder(ViewHolder holder) {
         this.holder = holder;
@@ -98,6 +97,14 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         holder.textViewStudyActivityDescription.setText(studyActivity.getDescription());
         holder.textViewStudyActivityDuration.setText("het zal " + studyActivity.getTime_est() + " minuten duren ");
 
+        // start start button
+        if ((studyActivity.getActivity_status()).equals("started")) {
+            holder.buttonStopwatchToggle.setText("Pauze");
+            holder.buttonStopwatchToggle.setBackgroundColor(0xff33b5e5);
+            holder.chronometerSessionTime.setBase(SystemClock.elapsedRealtime() + holder.timeWhenStopped);
+            holder.chronometerSessionTime.start();
+        }
+
         // event handlers
         holder.buttonStopwatchToggle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -120,7 +127,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         holder.buttonStopwatchStop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (studyActivity == getStudyActivity()) {
+                if (studyActivity == getStudyActivity() && timerRunning) {
                     /// stop Stopwatch
                     holder.timeWhenStopped = holder.chronometerSessionTime.getBase() - SystemClock.elapsedRealtime();
                     stopTimerDialog(holder, studyActivity);
@@ -201,9 +208,6 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
     private void startTimerDialog(final ViewHolder holder, final StudyActivity studyActivity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
-        // start timer
-        startTimer = false;
-
         // set builder attributes
         builder.setTitle("Leeractiviteit starten")
                 .setMessage("Bij het starten van een leeractiviteit wordt het volgende opgenomen: \n* omgevingsgeluid, \n* kamertemperatuur, \n* luchtvochtigheid, \n* beeldmateriaal. ")
@@ -226,9 +230,6 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
     // stop timer dialog
     private void stopTimerDialog(final ViewHolder holder, final StudyActivity studyActivity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        // start timer
-        startTimer = false;
 
         // set builder attributes
         builder.setTitle("Leeractiviteit stoppen")
@@ -269,6 +270,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
         // start
         holder.buttonStopwatchToggle.setText("Pauze");
+        holder.buttonStopwatchToggle.setBackgroundColor(0xff33b5e5);
         holder.chronometerSessionTime.setBase(SystemClock.elapsedRealtime() + holder.timeWhenStopped);
         holder.chronometerSessionTime.start();
     }
@@ -283,6 +285,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
         // stop
         holder.buttonStopwatchToggle.setText("Start");
+        holder.buttonStopwatchToggle.setBackgroundColor(0xff40ff81);
         holder.timeWhenStopped = holder.chronometerSessionTime.getBase() - SystemClock.elapsedRealtime();
         holder.chronometerSessionTime.stop();
     }
