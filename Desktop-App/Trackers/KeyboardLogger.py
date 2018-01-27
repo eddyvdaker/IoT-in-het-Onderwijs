@@ -28,4 +28,5 @@ class KeyboardLogger:
 
     def get_info(self):
         return {'name': 'Keyboard Logger',
-                'description': 'Logs all keyboard pressed during the session.'}
+                'description': 'Logs all keyboard pressed during the session.',
+                'data type': 'Keystrokes'}
