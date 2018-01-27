@@ -25,7 +25,8 @@ def create_db(debug):
         """
         CREATE TABLE teacher(
             id 				INTEGER PRIMARY KEY AUTOINCREMENT,
-            name 			TEXT NOT NULL
+            name 			TEXT NOT NULL,
+            short           TEXT NOT NULL
         );
         """, """
         CREATE TABLE student(
@@ -49,7 +50,7 @@ def create_db(debug):
             category 		TEXT,
             notes 			TEXT,
             activity_status TEXT NOT NULL,
-            time_est		TEXT,
+            time_est		INTEGER,
             
             FOREIGN KEY(studentid) REFERENCES student(id),
             FOREIGN KEY(moduleid) REFERENCES lesson_module(id),
@@ -103,9 +104,9 @@ def execute_read_query(db, command):
 
 def create_test_data(db):
     commands = ["""
-    INSERT INTO teacher (name) VALUES ('test_docent1');
+    INSERT INTO teacher (name, short) VALUES ('test_docent1', 'tt1');
     """, """
-    INSERT INTO teacher (name) VALUES ('test_docent2');
+    INSERT INTO teacher (name, short) VALUES ('test_docent2', 'tt2');
     """, """
     INSERT INTO student (name) VALUES ('test_student1');
     """, """
@@ -128,8 +129,6 @@ def create_test_data(db):
     UPDATE study_session SET stop_time = '15:35' WHERE id = 1;
     """, """
     INSERT INTO study_session (activityid, start_time, session_date) VALUES (2, '08:00', '2018-01-18');
-    """, """
-    UPDATE study_session SET stop_time = '10:45' WHERE id = 2;
     """, """
     INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '23:30', '2018-01-20');
     """, """

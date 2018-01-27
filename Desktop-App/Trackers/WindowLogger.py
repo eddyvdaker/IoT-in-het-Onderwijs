@@ -31,7 +31,8 @@ class WindowLogger:
 
     def get_info(self):
         return {'name': 'Window Logger',
-                'description': 'Logs the windows opened during the session.'}
+                'description': 'Logs the windows opened during the session.',
+                'data type': 'Windows'}
 
     def logging(self):
         while self.running:
