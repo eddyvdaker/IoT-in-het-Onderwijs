@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block header_text %}
+<div >
+    Activity Overview
+</div>
+{% endblock %}
+
+{% block main_content %}
+{% for item in page_vars['events'] %}
+<div class="list-group">
+    <div class="list-group-item">
+        <div class="row">
+            <div class="col-sm-12">
+                <p><a href="/activity/{{ item['id'] }}">{{ item['title'] }}</a></p>
+            </div>
+
+            <div class="col-sm-12">
+                <b>Description:</b> {{ item['description'] }}
+            </div>
+
+            <div class="col-sm-3">
+                <b>Module:</b>
+                {{ item['moduleid'] }}
+            </div>
+            <div class="col-sm-3">
+                <b>Type:</b>
+                {{ item['category'] }}
+            </div>
+            <div class="col-sm-2">
+                <b>Teacher:</b>
+                {{ item['teacherid'] }}
+            </div>
+            <div class="col-sm-4">
+                <b>Time estimate:</b>
+                {{ item['time_est'] }} min
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endblock %}

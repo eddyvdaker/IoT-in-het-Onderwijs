@@ -2,18 +2,58 @@
 StudyBuddy Server
 """
 
-from flask import abort, Flask, jsonify, request
+from flask import abort, Flask, jsonify, redirect, render_template, request
 from os import remove
+from urllib.request import urlopen
+import subprocess
 
+from dashboard import *
 from database import *
 from queries import *
 
 app = Flask(__name__)
 
 
+@app.route('/user/<username>', methods=['GET'])
+def student_page(username):
+    query = get_study_events_query(username)
+    data = execute_read_query(db, query)
+    cleaned_data = []
+    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
+               'description', 'category', 'notes', 'activity_status',
+               'time_est']
+    for row in data:
+        new_row = {}
+        for y, col in enumerate(list(row)):
+            new_row.update({columns[y]: col})
+        cleaned_data.append(new_row)
+    page_vars = {'events': cleaned_data}
+    page_vars.update({'username': username})
+
+    return render_template('overview.html', page_vars=page_vars)
+
+
+@app.route('/activity/<activity>', methods=['GET'])
+def activity_page(activity):
+    query = get_study_event_query(activity)
+    data = list(execute_read_query(db, query)[0])
+    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
+               'description', 'category', 'notes', 'activity_status',
+               'time_est']
+    page_vars = {}
+    for i, col in enumerate(data):
+        page_vars.update({columns[i]: col})
+
+    page_vars.update({'username': page_vars['studentid']})
+    return render_template('activity.html', page_vars=page_vars)
+
+
+# Returns the not logged in homepage, in this PoC it only contains
+# a field for selecting a user, in the real version of this system
+# it will be a login screen.
 @app.route('/', methods=['GET'])
 def homepage():
-    pass
+    return render_template('base.html', page_vars='')
 
 
 """
@@ -305,4 +345,5 @@ if __name__ == '__main__':
     print('Database initialized...')
 
     print('Starting Flask application...')
+    app.static_folder = 'static'
     app.run(host='0.0.0.0')
