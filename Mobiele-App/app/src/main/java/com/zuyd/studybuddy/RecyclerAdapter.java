@@ -27,7 +27,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdapter.ViewHolder> {
+public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ViewHolder> {
     private List<StudyActivity> listStudyActivities;
     private Context context;
     private boolean[] fabEnabled;
@@ -66,7 +66,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
     private static final String REQUESTTAG = "string request first";
 
     // constructor
-    public StudyActivityAdapter(List<StudyActivity> listStudyActivities, Context context, boolean[] fabEnabled) {
+    public RecyclerAdapter(List<StudyActivity> listStudyActivities, Context context, boolean[] fabEnabled) {
         this.listStudyActivities = listStudyActivities;
         this.context = context;
         this.fabEnabled = fabEnabled;
@@ -279,6 +279,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
     private void pauseTimer(final ViewHolder holder, StudyActivity studyActivity) {
         // timerRunning
         timerRunning = false;
+        fabEnabled[0] = true;
 
         // GET-request: toggle session // todo: refactor -> first execute the GET-request, then on success run the timer
         httpRequest(urlCentralServer.get("GETToggleSession"), studyActivity);

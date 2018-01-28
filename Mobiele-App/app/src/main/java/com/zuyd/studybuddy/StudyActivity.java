@@ -1,6 +1,8 @@
 package com.zuyd.studybuddy;
 
-public class StudyActivity {
+import java.io.Serializable;
+
+public class StudyActivity implements Serializable {
     /// class attributes
     private int id;
     private int studentid;

@@ -2,20 +2,20 @@ package com.zuyd.studybuddy;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabLayout;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -32,6 +32,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -39,6 +40,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    private SectionsPageAdapter mSectionsPageAdapter;
+    private ViewPager mViewPager;
+
     private FloatingActionButton fab;
     private boolean[] fabEnabled; // todo: dirty fix
 
@@ -66,11 +70,20 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getName();
     private static final String REQUESTTAG = "string request first"; // todo: ??
 
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        
+        // sectionspageadapter
+        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+
+        // Set up the ViewPager with the sections adapter
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
         // Floating Action button
         fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -88,11 +101,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-
-        /// recyclerview
-        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // studentid
         studentId = 1; // todo: get studentid from local file
@@ -112,7 +120,24 @@ public class MainActivity extends AppCompatActivity {
 
         if (isConnected) {
             getStudyActivities(urlCentralServer.get("GETAllStudyActivities"), this);
+        } else {
+            Toast.makeText(MainActivity.this, "Momenteel is er geen internet verbinding. Start de app opnieuw om het nogmaals te proberen.", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void setupViewPager(ViewPager viewPager) {
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
+
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("listStudyActivities", (Serializable) listStudyActivities);
+        bundle.putBooleanArray("fabEnabled", fabEnabled);
+
+        TodoTabFragment todoTabFragment = new TodoTabFragment();
+        todoTabFragment.setArguments(bundle);
+
+        adapter.addFragment(todoTabFragment, "To Do");
+        adapter.addFragment(new CompletedTabFragment(), "Completed");
+        viewPager.setAdapter(adapter);
     }
 
     // Overrides
@@ -243,8 +268,7 @@ public class MainActivity extends AppCompatActivity {
                                     Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-GS-JE)", Toast.LENGTH_SHORT).show();
                                 }
 
-                                adapter = new StudyActivityAdapter(listStudyActivities, contextAdapter, fabEnabled);
-                                recyclerView.setAdapter(adapter);
+                                setupViewPager(mViewPager);
                             }
                         }, new Response.ErrorListener() {
                     @Override
