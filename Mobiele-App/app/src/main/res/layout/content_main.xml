@@ -12,7 +12,7 @@
         android:id="@+id/recyclerView"
         android:layout_width="360dp"
         android:layout_height="495dp"
-        android:paddingTop="16dp"
+        android:paddingTop="30dp"
         tools:layout_editor_absoluteX="8dp"
         tools:layout_editor_absoluteY="8dp">
 
