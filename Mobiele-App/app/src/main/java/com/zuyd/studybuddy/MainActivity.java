@@ -124,29 +124,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-// use this code to create a menu with a settings item
-// @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
-
     /// Dialogs
     // create study activity dialog
     public void onCreateStudyActivityDialog() {
@@ -168,23 +145,49 @@ public class MainActivity extends AppCompatActivity {
                         EditText editText_dialog_moduleid = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_moduleid);
                         EditText editText_dialog_teacherid = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_teacherid);
 
+                        // todo: error checking
+//                        boolean filledDialog = true;
+//                        if (editText_dialog_name.getText().toString().length() == 0) {
+//                            filledDialog = false;
+//                            editText_dialog_name.setError("Dit veld is niet ingevuld");
+//                        }
+//                        if(editText_dialog_description.getText().toString().length() == 0) {
+//                            filledDialog = false;
+//                            editText_dialog_description.setError("Dit veld is niet ingevuld");
+//                        }
+//                        if(editText_dialog_duration.getText().toString().length() == 0) {
+//                            filledDialog = false;
+//                            editText_dialog_duration.setError("Dit veld is niet ingevuld");
+//                        }
+//                        if (editText_dialog_moduleid.getText().toString().length() == 0) {
+//                            filledDialog = false;
+//                            editText_dialog_moduleid.setError("Dit veld is niet ingevuld");
+//                        }
+//                        if(editText_dialog_teacherid.getText().toString().length() == 0) {
+//                            filledDialog = false;
+//                            editText_dialog_teacherid.setError("Dit veld is niet ingevuld");
+//                        }
+
                         // create StudyActivity-object
-                        StudyActivity studyActivity = new StudyActivity();
+//                        if (filledDialog) {
+//
+//                        }
 
-                        // essential attributes
-                        studyActivity.setStudentid(studentId); // todo: hardcode for now, but ask studentid on firstboot + editable in settings menu
-                        studyActivity.setModuleid(editText_dialog_moduleid.getText().toString());
-                        studyActivity.setTitle(editText_dialog_name.getText().toString());
+                            StudyActivity studyActivity = new StudyActivity();
 
-                        String teacherid = editText_dialog_teacherid.getText().toString();
+                            // essential attributes
+                            studyActivity.setStudentid(studentId); // todo: hardcode for now, but ask studentid on firstboot + editable in settings menu
+                            studyActivity.setModuleid(editText_dialog_moduleid.getText().toString());
+                            studyActivity.setTitle(editText_dialog_name.getText().toString());
 
-                        // optional attributes
-                        studyActivity.setDescription(editText_dialog_description.getText().toString());
-                        studyActivity.setTime_est(editText_dialog_duration.getText().toString());
+                            String teacherid = editText_dialog_teacherid.getText().toString();
 
-                        // save StudyActivity-object in external database
-                        createStudyActivity(urlCentralServer.get("POSTNewStudyActivity"), studyActivity, teacherid);
+                            // optional attributes
+                            studyActivity.setDescription(editText_dialog_description.getText().toString());
+                            studyActivity.setTime_est(editText_dialog_duration.getText().toString());
 
+                            // save StudyActivity-object in external database
+                            createStudyActivity(urlCentralServer.get("POSTNewStudyActivity"), studyActivity, teacherid);
                     }
                 })
                 .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
@@ -199,7 +202,7 @@ public class MainActivity extends AppCompatActivity {
 
     /// HTTP-Requests
     // get study activities
-    public void getStudyActivities(String url, final Context context) { // todo: move to separate utility class
+    public void getStudyActivities(String url, final Context context) {
         final Context contextAdapter = context;
         String finalUrl = url + studentId;
 
@@ -259,7 +262,6 @@ public class MainActivity extends AppCompatActivity {
         mRequestQueue.add(stringRequest);
     }
 
-    // todo: refactor to separate httpRequest utility class.
     // create study activity
     private void createStudyActivity(String url, StudyActivity studyActivity, String teacherid) {
         // form study Activity to json string
