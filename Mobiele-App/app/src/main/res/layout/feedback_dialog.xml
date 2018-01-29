@@ -6,124 +6,125 @@
     android:padding="20sp">
 
     <LinearLayout
-        android:id="@+id/lineairLayout_name"
+        android:id="@+id/lineairLayout_q3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_dialog_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Naam"
+            android:text="Met welk cijfer waardeer je deze leeractiviteit? (1-5)"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
-            android:id="@+id/editText_dialog_name"
+            android:id="@+id/editText_dialog_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
-            android:inputType="textPersonName" />
+            android:digits="12345"
+            android:inputType="number"
+            android:maxLength="1" />
+
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lineairLayout_description"
+        android:id="@+id/lineairLayout_q2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_dialog_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Beschrijving"
+            android:text="Hoe heb je deze leeractiviteit ervaren?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
-            android:id="@+id/editText_dialog_description"
+            android:id="@+id/editText_dialog_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:inputType="textMultiLine"
             android:textAlignment="viewStart" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lineairLayout_duration"
+        android:id="@+id/lineairLayout_q4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_dialog_pros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Duur (minuten)"
+            android:text="Wat ging goed?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
-            android:id="@+id/editText_dialog_duration"
+            android:id="@+id/editText_dialog_pros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-5dp"
-            android:layout_weight="1"
-            android:digits="0123456789"
-            android:inputType="number" />
-
+            android:inputType="text" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lineairLayout_moduleid"
+        android:id="@+id/lineairLayout_q1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_dialog_cons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Cursuscode"
+            android:text="Wat ging niet zo goed?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
-            android:id="@+id/editText_dialog_moduleid"
+            android:id="@+id/editText_dialog_cons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
-            android:inputType="textPersonName"
-            android:maxLength="4" />
+            android:ems="10"
+            android:inputType="textPersonName" />
     </LinearLayout>
 
     <LinearLayout
-        android:id="@+id/lineairLayout_teacherid"
+        android:id="@+id/lineairLayout_q5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
+            android:id="@+id/textView_dialog_improvements"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Docent"
+            android:text="Wat zijn de verbeterpunten?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
-            android:id="@+id/editText_dialog_teacherid"
+            android:id="@+id/editText_dialog_improvements"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:inputType="textPersonName" />
     </LinearLayout>

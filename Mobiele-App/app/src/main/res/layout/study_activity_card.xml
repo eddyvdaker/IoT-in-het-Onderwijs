@@ -16,84 +16,145 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:weightSum="1">
+            android:background="#f0f2f2"
+            android:orientation="vertical">
 
             <LinearLayout
-                android:id="@+id/lineairLayoutStopwatch"
-                android:layout_width="50dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="horizontal"
-                android:visibility="visible">
-
-                <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
-
-                    <Chronometer
-                        android:id="@+id/chronometerSessionTime"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:textAlignment="center"
-                        android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
-                        android:textSize="19sp" />
-                </RelativeLayout>
-
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.3"
-                android:orientation="vertical"
-                android:paddingLeft="8dip">
-
-                <TextView
-                    android:id="@+id/textViewStudyActivityTitle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Title"
-                    android:textAppearance="@style/TextAppearance.AppCompat.Title"
-                    android:textSize="24sp" />
-
-                <TextView
-                    android:id="@+id/textViewStudyActivityModuleid"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="cursuscode" />
-
-                <TextView
-                    android:id="@+id/textViewStudyActivityDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Beschrijving"
-                    android:textSize="18sp" />
-
-                <TextView
-                    android:id="@+id/textViewStudyActivityDuration"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Duur"
-                    android:textAlignment="viewStart" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_weight="0.7"
-                android:orientation="vertical"
                 android:weightSum="1">
 
-                <Button
-                    android:id="@+id/buttonStopwatchToggle"
+                <LinearLayout
+                    android:id="@+id/lineairLayoutStopwatch"
+                    android:layout_width="50dp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <Chronometer
+                            android:id="@+id/chronometerSessionTime"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_centerVertical="true"
+                            android:textAlignment="center"
+                            android:textAppearance="@style/TextAppearance.AppCompat.Widget.ActionBar.Title"
+                            android:textSize="19sp" />
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:layout_weight="0.5"
-                    android:background="#40ff81"
-                    android:text="Start"
-                    android:textColor="@color/cardview_light_background" />
+                    android:layout_weight="0.3"
+                    android:orientation="vertical"
+                    android:paddingLeft="8dip">
+
+                    <TextView
+                        android:id="@+id/textViewStudyActivityTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Title"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                        android:textSize="18sp" />
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView2"
+                            android:layout_width="87dp"
+                            android:layout_height="wrap_content"
+                            android:text="Module"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewStudyActivityModuleid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:text="cursuscode" />
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView5"
+                            android:layout_width="87dp"
+                            android:layout_height="wrap_content"
+                            android:text="Leraar"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewStudyActivityTeacherid"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="teacherid" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView3"
+                            android:layout_width="87dp"
+                            android:layout_height="wrap_content"
+                            android:text="Beschrijving"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewStudyActivityDescription"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Beschrijving"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:id="@+id/textView4"
+                            android:layout_width="87dp"
+                            android:layout_height="wrap_content"
+                            android:text="Duur"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/textViewStudyActivityDuration"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Duur"
+                            android:textAlignment="viewStart" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:orientation="horizontal"
+                android:weightSum="1">
 
                 <Button
                     android:id="@+id/buttonStopwatchStop"
@@ -104,8 +165,16 @@
                     android:text="Stop"
                     android:textColor="@color/cardview_light_background" />
 
-            </LinearLayout>
+                <Button
+                    android:id="@+id/buttonStopwatchToggle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:background="#40ff81"
+                    android:text="Start"
+                    android:textColor="@color/cardview_light_background" />
 
+            </LinearLayout>
         </LinearLayout>
 
     </android.support.v7.widget.CardView>

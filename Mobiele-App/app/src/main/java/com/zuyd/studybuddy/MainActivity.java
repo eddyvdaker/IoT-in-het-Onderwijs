@@ -14,9 +14,8 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -39,32 +38,34 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-    private FloatingActionButton fab;
-    private boolean[] fabEnabled; // todo: dirty fix
+    private static final String TAG = MainActivity.class.getName();
+    private static final String REQUESTTAG = "string request first";
 
-    private RecyclerView recyclerView;
-    public RecyclerView.Adapter adapter;
-
-    private List<StudyActivity> listStudyActivities;
-
-    // list url central server
     Map<String, String> urlCentralServer = new HashMap<String, String>();
+    String stringJsonStudyActivities;
+
+    // floating action button
+    private FloatingActionButton fab;
+    private boolean[] fabEnabled;
+
+    // recyclerView
+    private RecyclerView recyclerView;
+    private RecyclerView.Adapter adapter;
+
+    // list of study activity objects
+    private List<StudyActivity> listStudyActivities;
 
     // connection
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetwork;
     private boolean isConnected;
 
-    // REST-handler
-    String stringJsonStudyActivities; // todo: refactor - delete
-
-    private int studentId;
+    // student id
+    private int studentId = 1;
 
     // RequestQueue
     private RequestQueue mRequestQueue;
     private StringRequest stringRequest;
-    private static final String TAG = MainActivity.class.getName();
-    private static final String REQUESTTAG = "string request first"; // todo: ??
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -72,18 +73,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Floating Action button
+        /// floating Action button
+        // init
         fab = (FloatingActionButton) findViewById(R.id.fab);
         this.fabEnabled = new boolean[1];
         this.fabEnabled[0] = true;
 
+        // event handling
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (fabEnabled[0]) {
                     onCreateStudyActivityDialog();
                 } else {
-                    Snackbar snackbar = Snackbar.make(view, "Stop de leeractiviteit voordat je een ander wil toevoegen", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(view, "Pauzeer de leeractiviteit voordat je een ander wil toevoegen", Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
             }
@@ -95,11 +98,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // studentid
-        studentId = 1; // todo: get studentid from local file
+        studentId = 1; // todo: refactor: get studentid from local file
 
         // set URL central server
         urlCentralServer.put("GETAllStudyActivities", "http://ts.guydols.nl:5000/events?id=");
         urlCentralServer.put("POSTNewStudyActivity", "http://ts.guydols.nl:5000/event");
+
+        // request queue
+        mRequestQueue = Volley.newRequestQueue(this);
 
         // get connection status info
         connectivityManager = (ConnectivityManager) this.getSystemService(this.CONNECTIVITY_SERVICE);
@@ -107,15 +113,17 @@ public class MainActivity extends AppCompatActivity {
         activeNetwork = connectivityManager.getActiveNetworkInfo();
         isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        // request queue
-        mRequestQueue = Volley.newRequestQueue(this);
-
+        // init
         if (isConnected) {
             getStudyActivities(urlCentralServer.get("GETAllStudyActivities"), this);
+        } else {
+            Toast.makeText(MainActivity.this, "Er is geen internetverbinding. Herstart de app om opnieuw verbinding te maken.", Toast.LENGTH_LONG).show();
+            fab.setVisibility(View.GONE);
         }
     }
 
-    // Overrides
+    /// Overrides
+    // onStop
     @Override
     protected void onStop() {
         super.onStop();
@@ -132,51 +140,64 @@ public class MainActivity extends AppCompatActivity {
         // get the layout inflater
         LayoutInflater inflater = MainActivity.this.getLayoutInflater();
 
-        // inflate and set the layout for the dialog
-        // pass null as the parent view because it's going in the dialog layout
+        // inflate and set the layout for the dialog - pass null as the parent view because it's going in the dialog layout
         builder.setView(inflater.inflate(R.layout.study_activity_dialog, null))
                 .setTitle("Leeractiviteit aanmaken")
-                .setPositiveButton("Opslaan", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Aanmaken", null)
+                .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // EditTexts of dialog
-                        EditText editText_dialog_name = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_name);
-                        EditText editText_dialog_description = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_description);
-                        EditText editText_dialog_duration = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_duration);
-                        EditText editText_dialog_moduleid = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_moduleid);
-                        EditText editText_dialog_teacherid = (EditText) ((AlertDialog) dialog).findViewById(R.id.editText_dialog_teacherid);
+                        // do nothing: exit alertdialog and return to the main window
+                    }
+                });
 
-                        // todo: error checking
-//                        boolean filledDialog = true;
-//                        if (editText_dialog_name.getText().toString().length() == 0) {
-//                            filledDialog = false;
-//                            editText_dialog_name.setError("Dit veld is niet ingevuld");
-//                        }
-//                        if(editText_dialog_description.getText().toString().length() == 0) {
-//                            filledDialog = false;
-//                            editText_dialog_description.setError("Dit veld is niet ingevuld");
-//                        }
-//                        if(editText_dialog_duration.getText().toString().length() == 0) {
-//                            filledDialog = false;
-//                            editText_dialog_duration.setError("Dit veld is niet ingevuld");
-//                        }
-//                        if (editText_dialog_moduleid.getText().toString().length() == 0) {
-//                            filledDialog = false;
-//                            editText_dialog_moduleid.setError("Dit veld is niet ingevuld");
-//                        }
-//                        if(editText_dialog_teacherid.getText().toString().length() == 0) {
-//                            filledDialog = false;
-//                            editText_dialog_teacherid.setError("Dit veld is niet ingevuld");
-//                        }
+        // create the dialog
+        final AlertDialog alertDialog = builder.create();
+
+        // create custom PositiveButton with fields correction
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button button = ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                button.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // EditTexts of dialog
+                        EditText editText_dialog_name = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_name);
+                        EditText editText_dialog_description = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_description);
+                        EditText editText_dialog_duration = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_duration);
+                        EditText editText_dialog_moduleid = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_moduleid);
+                        EditText editText_dialog_teacherid = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_teacherid);
+
+                        // field validation
+                        boolean filledDialog = true;
+                        if (editText_dialog_name.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_name.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_description.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_description.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_duration.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_duration.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_moduleid.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_moduleid.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_teacherid.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_teacherid.setError("Dit veld is niet ingevuld");
+                        }
 
                         // create StudyActivity-object
-//                        if (filledDialog) {
-//
-//                        }
-
+                        if (filledDialog) {
                             StudyActivity studyActivity = new StudyActivity();
 
                             // essential attributes
-                            studyActivity.setStudentid(studentId); // todo: hardcode for now, but ask studentid on firstboot + editable in settings menu
+                            studyActivity.setStudentid(studentId);
                             studyActivity.setModuleid(editText_dialog_moduleid.getText().toString());
                             studyActivity.setTitle(editText_dialog_name.getText().toString());
 
@@ -188,15 +209,16 @@ public class MainActivity extends AppCompatActivity {
 
                             // save StudyActivity-object in external database
                             createStudyActivity(urlCentralServer.get("POSTNewStudyActivity"), studyActivity, teacherid);
-                    }
-                })
-                .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // do nothing: exit alertdialog and return to the main window
+
+                            // dismiss dialog
+                            alertDialog.dismiss();
+                        }
                     }
                 });
-        // get and show the AlertDialog from create()
-        AlertDialog alertDialog = builder.create();
+            }
+        });
+
+        // show the AlertDialog
         alertDialog.show();
     }
 
@@ -227,12 +249,12 @@ public class MainActivity extends AppCompatActivity {
                                         Gson gson = new Gson();
                                         StudyActivity studyActivity = gson.fromJson(jsonArray.get(i).toString(), StudyActivity.class);
 
-                                        if (!(studyActivity.getActivity_status()).equals("completed")) { //todo: create tab with To Do & Completed
+                                        if (!(studyActivity.getActivity_status()).equals("completed")) {
                                             listStudyActivities.add(studyActivity);
                                         }
                                     }
 
-                                    // error toast
+                                    // no available study activities
                                     if (listStudyActivities.isEmpty()) {
                                         Toast.makeText(MainActivity.this, "Momenteel zijn er geen openstaande leeractiviteiten", Toast.LENGTH_SHORT).show();
                                     }
@@ -240,7 +262,7 @@ public class MainActivity extends AppCompatActivity {
                                     Log.i(TAG, "JSONException has been catched");
 
                                     // error toast
-                                    Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-GS-JE)", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-GS-JE)", Toast.LENGTH_LONG).show();
                                 }
 
                                 adapter = new StudyActivityAdapter(listStudyActivities, contextAdapter, fabEnabled);
@@ -249,16 +271,14 @@ public class MainActivity extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
                         Log.i(TAG, "VolleyError " + error.toString());
 
                         // error toast
-                        Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-GS-ER)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-GS-ER)", Toast.LENGTH_LONG).show();
                     }
                 });
 
         stringRequest.setTag(REQUESTTAG);
-
         mRequestQueue.add(stringRequest);
     }
 
@@ -276,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
                 (Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        Log.d("Response", response); // todo: for testing-purpose
+                        Log.d("Response", response);
                         // confirmation toast
                         Toast.makeText(MainActivity.this, "De leeractiviteit is met succes aangemaakt", Toast.LENGTH_SHORT).show();
 
@@ -288,7 +308,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onErrorResponse(VolleyError error) {
                         Log.i(TAG, error.toString());
                         // error toast
-                        Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-CS-ER)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-CS-ER)", Toast.LENGTH_LONG).show();
                     }
                 }) {
             @Override
@@ -304,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                     Log.i(TAG, "Unsupported Encoding while trying to get the bytes of " + jsonStudyActivity + " using utf-8");
 
                     // error toast
-                    Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-CS-UE)", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Er is iets mis gegaan, neem contact op met de docent (MA-CS-UE)", Toast.LENGTH_LONG).show();
                     return null;
                 }
             }
