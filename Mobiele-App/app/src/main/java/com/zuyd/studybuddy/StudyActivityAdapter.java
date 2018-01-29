@@ -180,7 +180,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
         // set builder attributes
         builder.setTitle("Leeractiviteit starten")
-                .setMessage("Bij het starten van een leeractiviteit wordt het volgende opgenomen: \n* omgevingsgeluid, \n* kamertemperatuur, \n* luchtvochtigheid, \n* beeldmateriaal. ")
+                .setMessage("Let op:\nBij het starten van een leeractiviteit wordt het volgende opgenomen. \n\n* Omgevingsgeluid \n* Kamertemperatuur \n* Luchtvochtigheid \n* Beeldmateriaal ")
                 .setPositiveButton("Starten", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         startTimer(holder, studyActivity);
