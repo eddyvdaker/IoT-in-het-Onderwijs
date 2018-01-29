@@ -1,7 +1,40 @@
 {% extends 'base.html' %}
 
-{% block header_text %}Activity {{ page_vars['activity'] }}{% endblock %}
+{% block header_text %}Activity: {{ page_vars['title'] }}{% endblock %}
 
 {% block main_content %}
-<p>{{ page_vars }}</p>
+<div class="list-group">
+    <div class="list_group_item">
+        <div class="row">
+            <div class="col-sm-12">
+                <b>Description:</b> {{ page_vars['description'] }}
+            </div>
+            <hr>
+            <div class="col-sm-3">
+                <b>Module:</b><br>
+                {{ page_vars['moduleid'] }}
+            </div>
+            <div class="col-sm-3">
+                <b>Type:</b><br>
+                {{ page_vars['category'] }}
+            </div>
+            <div class="col-sm-2">
+                <b>Teacher:</b><br>
+                {{ page_vars['teacherid'] }}
+            </div>
+            <div class="col-sm-4">
+                <b>Time estimate:</b><br>
+                {{ page_vars['time_est'] }} min
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <form class="form-group" method="post">
+                <label for="notes">Notes:</label>
+                <textarea class="form-control" rows="5" id="notes">{{ page_vars['notes'] }}</textarea>
+                <button action="/update" class="btn btn-default" type="submit">Save</button>
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
