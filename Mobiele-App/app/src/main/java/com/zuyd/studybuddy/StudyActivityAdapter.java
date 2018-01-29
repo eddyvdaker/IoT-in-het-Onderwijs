@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Chronometer;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,7 +23,9 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.gson.Gson;
 
+import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +56,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
     // stopwatch
     private ViewHolder holder;
-    public static boolean timerRunning; // todo: why public?
+    public static boolean timerRunning;
 
     // list url central server
     Map<String, String> urlCentralServer = new HashMap<String, String>();
@@ -77,6 +80,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         urlCentralServer.put("GETAllStudyActivities", "http://ts.guydols.nl:5000/events?id=");
         urlCentralServer.put("GETToggleSession", "http://ts.guydols.nl:5000/toggle_session?id=");
         urlCentralServer.put("GETStopStudyActivity", "http://ts.guydols.nl:5000/stop_activity?id=");
+        urlCentralServer.put("POSTEventNotes", "http://ts.guydols.nl:5000/event_notes");
     }
 
     @Override
@@ -250,6 +254,102 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         alertDialog.show();
     }
 
+    // feedback dialog
+    private void feedbackDialog(ViewHolder holder, final StudyActivity studyActivity) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+        // get the layout inflater
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+        // inflate and set the layout for the dialog
+        // pass null as the parent view because it's going in the dialog layout
+        builder.setView(inflater.inflate(R.layout.feedback_dialog, null))
+                .setTitle("Feedback over " + studyActivity.getTitle())
+                .setPositiveButton("Versturen", null)
+                .setNegativeButton("Annuleren", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // do nothing: this stub is needed to set it's visibilty to GONE
+                    }
+                });
+
+        // create the dialog
+        final AlertDialog alertDialog = builder.create();
+
+        // create custom PositiveButton with fields correction
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(DialogInterface dialogInterface) {
+
+                Button positiveButton = ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // editTexts of dialog
+                        EditText editText_dialog_rating = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_rating);
+                        EditText editText_dialog_experience = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_experience);
+                        EditText editText_dialog_pros = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_pros);
+                        EditText editText_dialog_cons = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_cons);
+                        EditText editText_dialog_improvements = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_improvements);
+
+                        // textviews of dialog
+                        TextView textview_dialog_rating = (TextView) ((AlertDialog) alertDialog).findViewById(R.id.textView_dialog_rating);
+                        TextView textView_dialog_experience = (TextView) ((AlertDialog) alertDialog).findViewById(R.id.textView_dialog_experience);
+                        TextView textView_dialog_pros = (TextView) ((AlertDialog) alertDialog).findViewById(R.id.textView_dialog_pros);
+                        TextView textView_dialog_cons = (TextView) ((AlertDialog) alertDialog).findViewById(R.id.textView_dialog_cons);
+                        TextView textView_dialog_improvements = (TextView) ((AlertDialog) alertDialog).findViewById(R.id.textView_dialog_improvements);
+
+                        // error checking
+                        boolean filledDialog = true;
+                        if (editText_dialog_rating.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_rating.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_experience.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_experience.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_pros.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_pros.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_cons.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_cons.setError("Dit veld is niet ingevuld");
+                        }
+                        if (editText_dialog_improvements.getText().toString().length() == 0) {
+                            filledDialog = false;
+                            editText_dialog_improvements.setError("Dit veld is niet ingevuld");
+                        }
+
+                        // create StudyActivity-object
+                        if (filledDialog) {
+                            // create notes string
+                            String notes =
+                                    textview_dialog_rating.getText() + ": " + editText_dialog_rating.getText().toString() + "\n" +
+                                            textView_dialog_experience.getText() + ": " + editText_dialog_experience.getText().toString() + "\n" +
+                                            textView_dialog_pros.getText() + ": " + editText_dialog_pros.getText().toString() + "\n" +
+                                            textView_dialog_cons.getText() + ": " + editText_dialog_cons.getText().toString() + "\n" +
+                                            textView_dialog_improvements.getText() + ": " + editText_dialog_improvements.getText().toString();
+
+                            // POST notes
+                            postEventNotes(urlCentralServer.get("POSTEventNotes"), studyActivity, notes);
+
+                            // dismiss dialog
+                            alertDialog.dismiss();
+                        }
+                    }
+                });
+            }
+        });
+
+        // show the AlertDialog
+        alertDialog.show();
+
+        // hide negative button
+        Button negativeButton = ((AlertDialog) alertDialog).getButton(AlertDialog.BUTTON_NEGATIVE);
+        negativeButton.setVisibility(View.GONE);
+    }
+
     /// timer logic
     // start timer
     private void startTimer(ViewHolder holder, StudyActivity studyActivity) {
@@ -265,7 +365,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // study activity
         setStudyActivity(studyActivity);
 
-        // GET-request: toggle session // todo: refactor -> first execute the GET-request, then on success run the timer
+        // GET-request: toggle session
         httpRequest(urlCentralServer.get("GETToggleSession"), studyActivity);
 
         // start
@@ -280,7 +380,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // timerRunning
         timerRunning = false;
 
-        // GET-request: toggle session // todo: refactor -> first execute the GET-request, then on success run the timer
+        // GET-request: toggle session
         httpRequest(urlCentralServer.get("GETToggleSession"), studyActivity);
 
         // stop
@@ -292,7 +392,6 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
     // stop timer
     private void stopTimer(ViewHolder holder, StudyActivity studyActivity) {
-        // todo: refactor -> first execute the GET-request, then on success run the timer
         httpRequest(urlCentralServer.get("GETStopStudyActivity"), studyActivity);
 
         // timerRunning
@@ -305,6 +404,9 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
         // reset view
         holder.buttonStopwatchToggle.setText("Start");
+
+        // feedback dialog
+        feedbackDialog(holder, studyActivity);
     }
 
     /// HTTP-Requests
@@ -317,7 +419,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                Log.i(TAG, response); // todo: for testing purpose only
+                                Log.i(TAG, response);
                                 stringJsonStudysession = response;
 
                                 // confirmation toasts
@@ -326,23 +428,77 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
 
                                     /// refresh View when the stop button has been pressed
                                     ((MainActivity) context).getStudyActivities(urlCentralServer.get("GETAllStudyActivities"), context);
-                                } else if(response.contains("started")) {
+                                } else if (response.contains("started")) {
                                     Toast.makeText((MainActivity) context, "De leeractiviteit is gestart", Toast.LENGTH_SHORT).show();
-                                } else if(response.contains("paused")) {
+                                } else if (response.contains("paused")) {
                                     Toast.makeText((MainActivity) context, "De leeractiviteit is gepauzeerd", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        // TODO Auto-generated method stub
                         Log.i(TAG, error.toString());
 
                         // error toast
-                        Toast.makeText((MainActivity) context, "Er is iets mis gegaan, neem contact op met de docent (SA-HR-ER)", Toast.LENGTH_SHORT).show();
+                        Toast.makeText((MainActivity) context, "Er is iets mis gegaan, neem contact op met de docent (SA-HR-ER)", Toast.LENGTH_LONG).show();
                     }
                 });
 
+        stringRequest.setTag(REQUESTTAG);
+        mRequestQueue.add(stringRequest);
+    }
+
+    private void postEventNotes(final String url, StudyActivity studyActivity, String notes) {
+
+        // concatenate previous notes
+        if (!(studyActivity.getNotes() == null)) {
+            notes = studyActivity.getNotes() + notes;
+        }
+
+        // create json object
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("id", Integer.toString(studyActivity.getId()));
+        hashMap.put("notes", notes);
+
+        Gson gson = new Gson();
+        final String jsonObject = gson.toJson(hashMap);
+
+        StringRequest stringRequest = new StringRequest
+                (Request.Method.POST, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Log.d("Response", response);
+                        // confirmation toast
+                        Toast.makeText((MainActivity) context, "Bedankt! De feedback is verstuurd", Toast.LENGTH_SHORT).show();
+                    }
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        Log.i(TAG, error.toString());
+                        // error toast
+                        Toast.makeText((MainActivity) context, "Er is iets mis gegaan, neem contact op met de docent (SA-PE-ER)", Toast.LENGTH_LONG).show();
+                    }
+                }) {
+            @Override
+            public String getBodyContentType() {
+                return "application/json; charset=utf-8";
+            }
+
+            @Override
+            public byte[] getBody() {
+                try {
+                    return jsonObject == null ? null : jsonObject.getBytes("utf-8");
+                } catch (UnsupportedEncodingException uee) {
+                    Log.i(TAG, "Unsupported Encoding while trying to get the bytes of " + jsonObject + " using utf-8");
+
+                    // error toast
+                    Toast.makeText((MainActivity) context, "Er is iets mis gegaan, neem contact op met de docent (SA-PE-UE)", Toast.LENGTH_LONG).show();
+                    return null;
+                }
+            }
+        };
+
+        // POST-request to server using volley
         stringRequest.setTag(REQUESTTAG);
         mRequestQueue.add(stringRequest);
     }
