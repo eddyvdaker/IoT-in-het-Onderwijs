@@ -1,3 +1,6 @@
+#!/usr/bin/python
+ # -*- coding: utf-8 -*-
+
 from threading import Thread
 from sensors import main as sensors
 from communication import main as comms
@@ -5,11 +8,17 @@ from queue import Queue
 import time
 
 class controller:
-	"""docstring for ."""
+	"""
+	Controllerclass to setup sensors and communication classes,
+	these are launched in seperate threads and given queues for communication between threads
+	"""
+
 	def __init__(self):
+		# session globals
 		self.recording = False
 		self.id = None
 
+		# creating thread and queues
 		self.sensors_in = Queue()
 		self.sensors_out = Queue()
 		self.sensors_thread = Thread(target=sensors,
@@ -17,6 +26,7 @@ class controller:
 		self.sensors_thread.daemon = True
 		self.sensors_thread.start()
 
+		# creating thread and queues
 		self.comms_in = Queue()
 		self.comms_out = Queue()
 		self.comms_thread = Thread(target=comms,
@@ -26,6 +36,7 @@ class controller:
 
 		self.loop()
 
+	# main loop of the controller to check communication que and act on it
 	def loop(self):
 		while True:
 			cur = self.comms_in.get()
@@ -43,9 +54,11 @@ class controller:
 				print("Nothing do to...")
 			time.sleep(5)
 
+	# start recording of sensor data
 	def startRec(self):
 		self.sensors_in.put("start")
 
+	# stop recording of sensor data and send it to the comm thread
 	def stopRec(self):
 		self.sensors_in.put("stop")
 		data = self.sensors_out.get()
