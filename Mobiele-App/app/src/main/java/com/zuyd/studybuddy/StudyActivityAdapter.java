@@ -234,12 +234,12 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // set builder attributes
         builder.setTitle("Leeractiviteit stoppen")
                 .setMessage("Weet je zeker dat je deze leeractiviteit wil stoppen?")
-                .setPositiveButton("Stoppen", new DialogInterface.OnClickListener() {
+                .setPositiveButton("Ja", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         stopTimer(holder, studyActivity);
                     }
                 })
-                .setNegativeButton("Doorgaan", new DialogInterface.OnClickListener() {
+                .setNegativeButton("Nee", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // do nothing: exit alertdialog and return to the main window; recording continues.
                     }
