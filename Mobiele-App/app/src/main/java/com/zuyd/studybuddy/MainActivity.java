@@ -127,9 +127,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        if (mRequestQueue != null) {
-            mRequestQueue.cancelAll(REQUESTTAG);
-        }
     }
 
     /// Dialogs
