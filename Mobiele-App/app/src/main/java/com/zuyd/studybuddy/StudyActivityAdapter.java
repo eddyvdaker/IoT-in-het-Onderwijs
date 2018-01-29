@@ -371,7 +371,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         holder.chronometerSessionTime.stop();
         holder.timeWhenStopped = 0;
 
-        // reset view
+        // reset holder button text
         holder.buttonStopwatchToggle.setText("Start");
 
         // feedback dialog
