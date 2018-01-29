@@ -90,6 +90,8 @@ def get_study_event():
     return jsonify(cleaned_data)
 
 
+# Get details of all study events of an student ID
+# Used as 'GET /events?id=<studentID>'
 @app.route('/events', methods=['GET'])
 def get_study_events():
     student_id = request.args.get('id')
@@ -267,6 +269,20 @@ def upload_data():
 
     query = new_data_query(data['sessionid'], data['sessiondata'],
                            data['data_type'])
+    execute_write_query(db, query)
+
+    return jsonify(data)
+
+
+# Update the note field for a set event
+# Used as 'POST /event_notes {'id': <event_id>, 'notes': <notes>}'
+@app.route('/event_notes', methods=['POST'])
+def update_event_notes():
+    if not request.json:
+        abort(400)
+    data = request.json
+
+    query = update_activity_notes_query(data['id'], data['notes'])
     execute_write_query(db, query)
 
     return jsonify(data)

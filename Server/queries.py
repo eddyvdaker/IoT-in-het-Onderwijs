@@ -120,3 +120,8 @@ def update_session_stop_time_query(session_id):
 def new_data_query(session_id, data, data_type):
     return f'INSERT INTO session_data (sessionid, sessiondata, data_type) ' \
            f'VALUES ({session_id}, \"{data}\", \"{data_type}\")'
+
+
+def update_activity_notes_query(event_id, notes):
+    return f'UPDATE study_activity SET notes = \'{notes}\'' \
+           f'WHERE id = {event_id}'
