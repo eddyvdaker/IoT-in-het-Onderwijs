@@ -104,7 +104,7 @@ def new_study_session_query(event_id):
     current_date = str(datetime.now().isoformat())[0:10]
     return f'INSERT INTO study_session (activityid, session_date, ' \
            f'start_time) VALUES ({event_id}, \'{current_date}\', ' \
-           f'{time()})'
+           f'{int(time())})'
 
 
 def update_activity_status_query(event_id, new_status):
@@ -113,7 +113,7 @@ def update_activity_status_query(event_id, new_status):
 
 
 def update_session_stop_time_query(session_id):
-    return f'UPDATE study_session SET stop_time = \'{time()}\' ' \
+    return f'UPDATE study_session SET stop_time = \'{int(time())}\' ' \
            f'WHERE id = {session_id}'
 
 
@@ -125,3 +125,11 @@ def new_data_query(session_id, data, data_type):
 def update_activity_notes_query(event_id, notes):
     return f'UPDATE study_activity SET notes = \'{notes}\'' \
            f'WHERE id = {event_id}'
+
+
+def get_session_information(event_id):
+    return f'SELECT * FROM study_session WHERE activityid = {event_id}'
+
+
+def get_data_for_session(session_id):
+    return f'SELECT * FROM session_data WHERE sessionid = {session_id}'
