@@ -4,8 +4,6 @@ StudyBuddy Server
 
 from flask import abort, Flask, jsonify, redirect, render_template, request
 from os import remove
-from urllib.request import urlopen
-import subprocess
 
 from dashboard import *
 from database import *
@@ -16,35 +14,13 @@ app = Flask(__name__)
 
 @app.route('/user/<username>', methods=['GET'])
 def student_page(username):
-    query = get_study_events_query(username)
-    data = execute_read_query(db, query)
-    cleaned_data = []
-    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
-               'description', 'category', 'notes', 'activity_status',
-               'time_est']
-    for row in data:
-        new_row = {}
-        for y, col in enumerate(list(row)):
-            new_row.update({columns[y]: col})
-        cleaned_data.append(new_row)
-    page_vars = {'events': cleaned_data}
-    page_vars.update({'username': username})
-
+    page_vars = get_student_page_vars(username, db)
     return render_template('overview.html', page_vars=page_vars)
 
 
 @app.route('/activity/<activity>', methods=['GET'])
 def activity_page(activity):
-    query = get_study_event_query(activity)
-    data = list(execute_read_query(db, query)[0])
-    columns = ['id', 'studentid', 'moduleid', 'teacherid', 'title',
-               'description', 'category', 'notes', 'activity_status',
-               'time_est']
-    page_vars = {}
-    for i, col in enumerate(data):
-        page_vars.update({columns[i]: col})
-
-    page_vars.update({'username': page_vars['studentid']})
+    page_vars = get_activity_page_vars(activity, db)
     return render_template('activity.html', page_vars=page_vars)
 
 
@@ -90,6 +66,8 @@ def get_study_event():
     return jsonify(cleaned_data)
 
 
+# Get details of all study events of an student ID
+# Used as 'GET /events?id=<studentID>'
 @app.route('/events', methods=['GET'])
 def get_study_events():
     student_id = request.args.get('id')
@@ -267,6 +245,20 @@ def upload_data():
 
     query = new_data_query(data['sessionid'], data['sessiondata'],
                            data['data_type'])
+    execute_write_query(db, query)
+
+    return jsonify(data)
+
+
+# Update the note field for a set event
+# Used as 'POST /event_notes {'id': <event_id>, 'notes': <notes>}'
+@app.route('/event_notes', methods=['POST'])
+def update_event_notes():
+    if not request.json:
+        abort(400)
+    data = request.json
+
+    query = update_activity_notes_query(data['id'], data['notes'])
     execute_write_query(db, query)
 
     return jsonify(data)
