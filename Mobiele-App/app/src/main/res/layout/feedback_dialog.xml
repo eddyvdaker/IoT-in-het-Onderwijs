@@ -25,6 +25,7 @@
             android:id="@+id/editText_dialog_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:digits="12345"
             android:inputType="number"
@@ -52,6 +53,7 @@
             android:id="@+id/editText_dialog_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:inputType="textMultiLine"
             android:textAlignment="viewStart" />
@@ -77,6 +79,7 @@
             android:id="@+id/editText_dialog_pros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp"
             android:inputType="text" />
     </LinearLayout>
 
@@ -100,6 +103,7 @@
             android:id="@+id/editText_dialog_cons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:ems="10"
             android:inputType="textPersonName" />
@@ -125,6 +129,7 @@
             android:id="@+id/editText_dialog_improvements"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="-5dp"
             android:layout_weight="1"
             android:inputType="textPersonName" />
     </LinearLayout>
