@@ -1,3 +1,6 @@
+#!/usr/bin/python
+ # -*- coding: utf-8 -*-
+
 from queue import Empty
 from queue import Queue
 from threading import Thread
@@ -8,8 +11,13 @@ import lib.ky018 as ky018
 import time
 
 
-
 class runDHT11:
+	"""
+	Temperature and humidity sensor class
+	this class run in it's own thread collecting data
+	until it get the command to stop
+	"""
+
 	def __init__(self,cin,cout,interval):
 		self.cin = cin
 		self.cout = cout
@@ -19,6 +27,8 @@ class runDHT11:
 		self.running = True
 		self.main()
 
+	# try to read data from the dht11 sensors
+	# interval = get result every x time
 	def getData(self,interval):
 		initial_time = time.time()
 		data = []
@@ -34,6 +44,7 @@ class runDHT11:
 				pass
 		return data
 
+	# collect the data and send it back when done
 	def main(self):
 		while self.running == True:
 			try:
@@ -48,6 +59,12 @@ class runDHT11:
 
 
 class runKY038:
+	"""
+	Sound peaks (loud noise dectection) sensor class
+	this class run in it's own thread collecting data
+	until it get the command to stop
+	"""
+
 	def __init__(self,cin,cout,interval):
 		self.cin = cin
 		self.cout = cout
@@ -57,9 +74,12 @@ class runKY038:
 		self.running = True
 		self.main()
 
+	# creating listener in the lib to callback when sound is detected
+	# interval = the amount of seconds to listen for
 	def getData(self,interval):
 		return self.ky038Instance.listen(interval)
 
+	# collect the data and send it back when done
 	def main(self):
 		while self.running == True:
 			try:
@@ -74,6 +94,12 @@ class runKY038:
 
 
 class runKY018:
+	"""
+	Light amount sensor class
+	this class run in it's own thread collecting data
+	until it get the command to stop
+	"""
+
 	def __init__(self,cin,cout,interval):
 		self.cin = cin
 		self.cout = cout
@@ -83,9 +109,11 @@ class runKY018:
 		self.running = True
 		self.main()
 
+	# read light sensor
 	def getData(self):
 		return self.ky018Instance.read()
 
+	# collect the data and send it back when done
 	def main(self):
 		while self.running == True:
 			try:
@@ -99,10 +127,10 @@ class runKY018:
 			if self.running:
 				time.sleep(self.interval)
 
-
-
+# this runs from the main thread to create the threads for the sensors
+# if recording is started when it's done the threads give their data back and get destroyed
 def main(sensors_in,sensors_out):
-	interval = 60
+	interval = 30
 	while True:
 		try:
 			cmd = sensors_in.get_nowait()
