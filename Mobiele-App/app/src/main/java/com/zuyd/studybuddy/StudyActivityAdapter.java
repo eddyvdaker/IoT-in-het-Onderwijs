@@ -25,48 +25,30 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import org.w3c.dom.Text;
+
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdapter.ViewHolder> {
+    private static final String TAG = MainActivity.class.getName();
+    private static final String REQUESTTAG = "string request first";
+    public static boolean timerRunning;
+
+    Map<String, String> urlCentralServer = new HashMap<String, String>();
+    String stringJsonStudysession;
+
     private List<StudyActivity> listStudyActivities;
     private Context context;
     private boolean[] fabEnabled;
 
-    public void setHolder(ViewHolder holder) {
-        this.holder = holder;
-    }
+    private StudyActivity studyActivity;
 
-    public ViewHolder getHolder() {
-        return this.holder;
-    }
-
-    // study activity
-    StudyActivity studyActivity;
-
-    public void setStudyActivity(StudyActivity studyActivity) {
-        this.studyActivity = studyActivity;
-    }
-
-    public StudyActivity getStudyActivity() {
-        return this.studyActivity;
-    }
-
-    // stopwatch
     private ViewHolder holder;
-    public static boolean timerRunning;
-
-    // list url central server
-    Map<String, String> urlCentralServer = new HashMap<String, String>();
-
-    // HTTP
-    String stringJsonStudysession;
     private StringRequest stringRequest;
     private RequestQueue mRequestQueue;
-    private static final String TAG = MainActivity.class.getName();
-    private static final String REQUESTTAG = "string request first";
 
     // constructor
     public StudyActivityAdapter(List<StudyActivity> listStudyActivities, Context context, boolean[] fabEnabled) {
@@ -81,6 +63,23 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         urlCentralServer.put("GETToggleSession", "http://ts.guydols.nl:5000/toggle_session?id=");
         urlCentralServer.put("GETStopStudyActivity", "http://ts.guydols.nl:5000/stop_activity?id=");
         urlCentralServer.put("POSTEventNotes", "http://ts.guydols.nl:5000/event_notes");
+    }
+
+    // getters & setters
+    public ViewHolder getHolder() {
+        return this.holder;
+    }
+
+    public void setHolder(ViewHolder holder) {
+        this.holder = holder;
+    }
+
+    public StudyActivity getStudyActivity() {
+        return this.studyActivity;
+    }
+
+    public void setStudyActivity(StudyActivity studyActivity) {
+        this.studyActivity = studyActivity;
     }
 
     @Override
@@ -98,8 +97,9 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // set textview attribute text-values
         holder.textViewStudyActivityTitle.setText(studyActivity.getTitle());
         holder.textViewStudyActivityModuleid.setText(studyActivity.getModuleid());
+        holder.textViewStudyActivityTeacherid.setText(Integer.toString(studyActivity.getTeacherid()));
         holder.textViewStudyActivityDescription.setText(studyActivity.getDescription());
-        holder.textViewStudyActivityDuration.setText("het zal " + studyActivity.getTime_est() + " minuten duren ");
+        holder.textViewStudyActivityDuration.setText(studyActivity.getTime_est() + " minuten");
 
         // start start button
         if ((studyActivity.getActivity_status()).equals("started")) {
@@ -161,42 +161,8 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         return listStudyActivities.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        // Study activity attributes
-        public TextView textViewStudyActivityTitle;
-        public TextView textViewStudyActivityModuleid;
-        public TextView textViewStudyActivityDescription;
-        public TextView textViewStudyActivityDuration;
-
-        // Stopwatch UI
-        public LinearLayout linearLayoutStopwatch;
-        public Button buttonStopwatchToggle;
-        public Button buttonStopwatchStop;
-
-        // chronometer
-        private Chronometer chronometerSessionTime;
-        private long timeWhenStopped = 0;
-
-        // constructor of Viewholder class
-        public ViewHolder(View itemView) {
-            super(itemView);
-
-            // Study activity attributes:
-            textViewStudyActivityTitle = (TextView) itemView.findViewById(R.id.textViewStudyActivityTitle);
-            textViewStudyActivityModuleid = (TextView) itemView.findViewById(R.id.textViewStudyActivityModuleid);
-            textViewStudyActivityDescription = (TextView) itemView.findViewById(R.id.textViewStudyActivityDescription);
-            textViewStudyActivityDuration = (TextView) itemView.findViewById(R.id.textViewStudyActivityDuration);
-
-            // Stopwatch UI
-            linearLayoutStopwatch = (LinearLayout) itemView.findViewById(R.id.lineairLayoutStopwatch);
-            chronometerSessionTime = (Chronometer) itemView.findViewById(R.id.chronometerSessionTime);
-            buttonStopwatchToggle = (Button) itemView.findViewById(R.id.buttonStopwatchToggle);
-            buttonStopwatchStop = (Button) itemView.findViewById(R.id.buttonStopwatchStop);
-        }
-    }
-
-    //// chronometer logic
-    /// toggle: start-pause
+    /// Chronometer logic
+    // toggle: start-pause
     private void toggleTimer(final ViewHolder holder, final StudyActivity studyActivity) {
         if ((holder.buttonStopwatchToggle.getText()).equals("Start") && !(holder.chronometerSessionTime.getText()).equals("00:00")) {
             startTimer(holder, studyActivity);
@@ -207,7 +173,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         }
     }
 
-    /// dialogs
+    /// Dialogs
     // start timer dialog
     private void startTimerDialog(final ViewHolder holder, final StudyActivity studyActivity) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -380,6 +346,9 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // timerRunning
         timerRunning = false;
 
+        // fabenabled
+        fabEnabled[0] = true;
+
         // GET-request: toggle session
         httpRequest(urlCentralServer.get("GETToggleSession"), studyActivity);
 
@@ -448,6 +417,7 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         mRequestQueue.add(stringRequest);
     }
 
+    // post feedback into the notes-attribute of an event
     private void postEventNotes(final String url, StudyActivity studyActivity, String notes) {
 
         // concatenate previous notes
@@ -470,6 +440,9 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
                         Log.d("Response", response);
                         // confirmation toast
                         Toast.makeText((MainActivity) context, "Bedankt! De feedback is verstuurd", Toast.LENGTH_SHORT).show();
+
+                        /// refresh View
+                        ((MainActivity) context).getStudyActivities(urlCentralServer.get("GETAllStudyActivities"), context);
                     }
                 }, new Response.ErrorListener() {
                     @Override
@@ -501,5 +474,41 @@ public class StudyActivityAdapter extends RecyclerView.Adapter<StudyActivityAdap
         // POST-request to server using volley
         stringRequest.setTag(REQUESTTAG);
         mRequestQueue.add(stringRequest);
+    }
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        // Study activity attributes
+        public TextView textViewStudyActivityTitle;
+        public TextView textViewStudyActivityModuleid;
+        public TextView textViewStudyActivityTeacherid;
+        public TextView textViewStudyActivityDescription;
+        public TextView textViewStudyActivityDuration;
+
+        // Stopwatch UI
+        public LinearLayout linearLayoutStopwatch;
+        public Button buttonStopwatchToggle;
+        public Button buttonStopwatchStop;
+
+        // chronometer
+        private Chronometer chronometerSessionTime;
+        private long timeWhenStopped = 0;
+
+        // constructor of Viewholder class
+        public ViewHolder(View itemView) {
+            super(itemView);
+
+            // Study activity attributes:
+            textViewStudyActivityTitle = (TextView) itemView.findViewById(R.id.textViewStudyActivityTitle);
+            textViewStudyActivityModuleid = (TextView) itemView.findViewById(R.id.textViewStudyActivityModuleid);
+            textViewStudyActivityTeacherid = (TextView) itemView.findViewById(R.id.textViewStudyActivityTeacherid);
+            textViewStudyActivityDescription = (TextView) itemView.findViewById(R.id.textViewStudyActivityDescription);
+            textViewStudyActivityDuration = (TextView) itemView.findViewById(R.id.textViewStudyActivityDuration);
+
+            // Stopwatch UI
+            linearLayoutStopwatch = (LinearLayout) itemView.findViewById(R.id.lineairLayoutStopwatch);
+            chronometerSessionTime = (Chronometer) itemView.findViewById(R.id.chronometerSessionTime);
+            buttonStopwatchToggle = (Button) itemView.findViewById(R.id.buttonStopwatchToggle);
+            buttonStopwatchStop = (Button) itemView.findViewById(R.id.buttonStopwatchStop);
+        }
     }
 }

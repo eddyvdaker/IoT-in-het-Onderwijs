@@ -14,8 +14,6 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -40,32 +38,34 @@ import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
+    private static final String TAG = MainActivity.class.getName();
+    private static final String REQUESTTAG = "string request first";
+
+    Map<String, String> urlCentralServer = new HashMap<String, String>();
+    String stringJsonStudyActivities;
+
+    // floating action button
     private FloatingActionButton fab;
     private boolean[] fabEnabled;
 
+    // recyclerView
     private RecyclerView recyclerView;
-    public RecyclerView.Adapter adapter;
+    private RecyclerView.Adapter adapter;
 
+    // list of study activity objects
     private List<StudyActivity> listStudyActivities;
-
-    // list url central server
-    Map<String, String> urlCentralServer = new HashMap<String, String>();
 
     // connection
     private ConnectivityManager connectivityManager;
     private NetworkInfo activeNetwork;
     private boolean isConnected;
 
-    // REST-handler
-    String stringJsonStudyActivities;
-
-    private int studentId;
+    // student id
+    private int studentId = 1;
 
     // RequestQueue
     private RequestQueue mRequestQueue;
     private StringRequest stringRequest;
-    private static final String TAG = MainActivity.class.getName();
-    private static final String REQUESTTAG = "string request first";
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,18 +73,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Floating Action button
+        /// floating Action button
+        // init
         fab = (FloatingActionButton) findViewById(R.id.fab);
         this.fabEnabled = new boolean[1];
         this.fabEnabled[0] = true;
 
+        // event handling
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (fabEnabled[0]) {
                     onCreateStudyActivityDialog();
                 } else {
-                    Snackbar snackbar = Snackbar.make(view, "Stop de leeractiviteit voordat je een ander wil toevoegen", Snackbar.LENGTH_LONG);
+                    Snackbar snackbar = Snackbar.make(view, "Pauzeer de leeractiviteit voordat je een ander wil toevoegen", Snackbar.LENGTH_LONG);
                     snackbar.show();
                 }
             }
@@ -96,11 +98,14 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         // studentid
-        studentId = 1; // todo: get studentid from local file
+        studentId = 1; // todo: refactor: get studentid from local file
 
         // set URL central server
         urlCentralServer.put("GETAllStudyActivities", "http://ts.guydols.nl:5000/events?id=");
         urlCentralServer.put("POSTNewStudyActivity", "http://ts.guydols.nl:5000/event");
+
+        // request queue
+        mRequestQueue = Volley.newRequestQueue(this);
 
         // get connection status info
         connectivityManager = (ConnectivityManager) this.getSystemService(this.CONNECTIVITY_SERVICE);
@@ -108,17 +113,17 @@ public class MainActivity extends AppCompatActivity {
         activeNetwork = connectivityManager.getActiveNetworkInfo();
         isConnected = activeNetwork != null && activeNetwork.isConnectedOrConnecting();
 
-        // request queue
-        mRequestQueue = Volley.newRequestQueue(this);
-
+        // init
         if (isConnected) {
             getStudyActivities(urlCentralServer.get("GETAllStudyActivities"), this);
         } else {
-            Toast.makeText(MainActivity.this, "Er is geen internetverbinding. Herstart de app.", Toast.LENGTH_LONG).show();
+            Toast.makeText(MainActivity.this, "Er is geen internetverbinding. Herstart de app om opnieuw verbinding te maken.", Toast.LENGTH_LONG).show();
+            fab.setVisibility(View.GONE);
         }
     }
 
-    // Overrides
+    /// Overrides
+    // onStop
     @Override
     protected void onStop() {
         super.onStop();
@@ -135,8 +140,7 @@ public class MainActivity extends AppCompatActivity {
         // get the layout inflater
         LayoutInflater inflater = MainActivity.this.getLayoutInflater();
 
-        // inflate and set the layout for the dialog
-        // pass null as the parent view because it's going in the dialog layout
+        // inflate and set the layout for the dialog - pass null as the parent view because it's going in the dialog layout
         builder.setView(inflater.inflate(R.layout.study_activity_dialog, null))
                 .setTitle("Leeractiviteit aanmaken")
                 .setPositiveButton("Aanmaken", null)
@@ -165,17 +169,17 @@ public class MainActivity extends AppCompatActivity {
                         EditText editText_dialog_moduleid = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_moduleid);
                         EditText editText_dialog_teacherid = (EditText) ((AlertDialog) alertDialog).findViewById(R.id.editText_dialog_teacherid);
 
-                        // error checking
+                        // field validation
                         boolean filledDialog = true;
                         if (editText_dialog_name.getText().toString().length() == 0) {
                             filledDialog = false;
                             editText_dialog_name.setError("Dit veld is niet ingevuld");
                         }
-                        if(editText_dialog_description.getText().toString().length() == 0) {
+                        if (editText_dialog_description.getText().toString().length() == 0) {
                             filledDialog = false;
                             editText_dialog_description.setError("Dit veld is niet ingevuld");
                         }
-                        if(editText_dialog_duration.getText().toString().length() == 0) {
+                        if (editText_dialog_duration.getText().toString().length() == 0) {
                             filledDialog = false;
                             editText_dialog_duration.setError("Dit veld is niet ingevuld");
                         }
@@ -183,7 +187,7 @@ public class MainActivity extends AppCompatActivity {
                             filledDialog = false;
                             editText_dialog_moduleid.setError("Dit veld is niet ingevuld");
                         }
-                        if(editText_dialog_teacherid.getText().toString().length() == 0) {
+                        if (editText_dialog_teacherid.getText().toString().length() == 0) {
                             filledDialog = false;
                             editText_dialog_teacherid.setError("Dit veld is niet ingevuld");
                         }
@@ -250,7 +254,7 @@ public class MainActivity extends AppCompatActivity {
                                         }
                                     }
 
-                                    // geen openstaande leeractiviteiten
+                                    // no available study activities
                                     if (listStudyActivities.isEmpty()) {
                                         Toast.makeText(MainActivity.this, "Momenteel zijn er geen openstaande leeractiviteiten", Toast.LENGTH_SHORT).show();
                                     }
@@ -275,7 +279,6 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         stringRequest.setTag(REQUESTTAG);
-
         mRequestQueue.add(stringRequest);
     }
 

@@ -9,14 +9,16 @@
         android:id="@+id/lineairLayout_q3"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_dialog_rating"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
             android:layout_weight="1"
-            android:text="Met welke cijfer waardeer je deze leeractiviteit? (1-10)"
+            android:text="Met welk cijfer waardeer je deze leeractiviteit? (1-5)"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
         <EditText
@@ -24,9 +26,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:digits="0123456789"
-            android:ems="10"
-            android:inputType="number" />
+            android:digits="12345"
+            android:inputType="number"
+            android:maxLength="1" />
 
     </LinearLayout>
 
@@ -34,12 +36,14 @@
         android:id="@+id/lineairLayout_q2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_dialog_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
             android:layout_weight="1"
             android:text="Hoe heb je deze leeractiviteit ervaren?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
@@ -49,7 +53,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:ems="10"
             android:inputType="textMultiLine"
             android:textAlignment="viewStart" />
     </LinearLayout>
@@ -58,12 +61,15 @@
         android:id="@+id/lineairLayout_q4"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_dialog_pros"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
+            android:layout_weight="1"
             android:text="Wat ging goed?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
@@ -78,12 +84,14 @@
         android:id="@+id/lineairLayout_q1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_dialog_cons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
             android:layout_weight="1"
             android:text="Wat ging niet zo goed?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
@@ -101,12 +109,14 @@
         android:id="@+id/lineairLayout_q5"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
         android:orientation="vertical">
 
         <TextView
             android:id="@+id/textView_dialog_improvements"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="-10dp"
             android:layout_weight="1"
             android:text="Wat zijn de verbeterpunten?"
             android:textAppearance="@android:style/TextAppearance.Material.Medium" />
