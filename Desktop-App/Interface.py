@@ -12,6 +12,7 @@ STUDENT_ID = 1
 IP = 'ts.guydols.nl'
 URL = f'http://{IP}:5000/'
 
+LOGGERS_TO_RUN = None
 
 class ScrollableFrame(Frame):
 
@@ -105,7 +106,7 @@ class App:
 
     # Start running the GUI
     def start(self):
-        self.root.after(0, self.check_api)
+        self.root.after(500, self.check_api)
         self.root.mainloop()
 
     # Toggle tracking session and change the button text
@@ -120,15 +121,18 @@ class App:
 
     # Starts each of the loggers that are turned on
     def start_loggers(self):
-        self.loggers_to_run_at_start = self.loggers_to_run
+        global LOGGERS_TO_RUN
+        LOGGERS_TO_RUN = [x.get() for x in self.loggers_to_run]
+        print(f'loggers_to_run_at_start at start: {LOGGERS_TO_RUN}')
         for i, logger in enumerate(self.loggers):
             if self.loggers_to_run[i].get() == 1:
                 logger.start_logging()
 
     # Stops each of the loggers, starts log collection and log writing
     def stop_loggers(self):
+        print(f'loggers_to_run_at_start at stop: {LOGGERS_TO_RUN}')
         for i, logger in enumerate(self.loggers):
-            if self.loggers_to_run_at_start[i].get() == 1:
+            if LOGGERS_TO_RUN[i] == 1:
                 logger.stop_logging()
         logs = self.get_logs()
         self.store_logs(logs)
@@ -137,7 +141,7 @@ class App:
     def get_logs(self):
         logs = []
         for i, logger in enumerate(self.loggers):
-            if self.loggers_to_run_at_start[i].get() == 1:
+            if LOGGERS_TO_RUN[i] == 1:
                 info = logger.get_info()
                 session_data = str({info['name']: logger.get_log()})
                 logs.append({'data_type': info['data type'],
