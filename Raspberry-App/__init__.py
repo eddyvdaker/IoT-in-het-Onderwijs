@@ -1,10 +1,11 @@
 #!/usr/bin/python
- # -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 from threading import Thread
 from sensors import main as sensors
 from communication import main as comms
 from queue import Queue
+import lib.rgb
 import time
 
 class controller:
@@ -17,6 +18,7 @@ class controller:
 		# session globals
 		self.recording = False
 		self.id = None
+		self.led = lib.rgb.Led()
 
 		# creating thread and queues
 		self.sensors_in = Queue()
@@ -34,6 +36,7 @@ class controller:
 		self.comms_thread.daemon = True
 		self.comms_thread.start()
 
+		self.led.setColor("010")
 		self.loop()
 
 	# main loop of the controller to check communication que and act on it
@@ -41,6 +44,7 @@ class controller:
 		while True:
 			cur = self.comms_in.get()
 			if cur["status"] == "running" and self.recording == False:
+
 				print("starting sensors, __init__.py")
 				self.recording = True
 				self.id = cur["id"]
@@ -56,10 +60,12 @@ class controller:
 
 	# start recording of sensor data
 	def startRec(self):
+		self.led.setColor("100")
 		self.sensors_in.put("start")
 
 	# stop recording of sensor data and send it to the comm thread
 	def stopRec(self):
+		self.led.setColor("001")
 		self.sensors_in.put("stop")
 		data = self.sensors_out.get()
 		temps=[]
@@ -72,6 +78,7 @@ class controller:
 		self.comms_out.put(["geluid",data[1],self.id])
 		self.comms_out.put(["light",data[2],self.id])
 		self.id = None
+		self.led.setColor("010")
 
 if __name__ == '__main__':
 	instance = controller()
