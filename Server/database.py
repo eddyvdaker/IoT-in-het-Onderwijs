@@ -116,25 +116,25 @@ def create_test_data(db):
     """, """
     INSERT INTO lesson_module (id, name, description) VALUES ('tm02', 'test_module2', 'Second testing module');
     """, """
-    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (1, 'tm01', 2, 'Test activity 1', 'First testing activity for student1', 'Reading', 'This is part of test data', 'not started', '30');
+    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (1, 'tm01', 2, 'Werkcollege 1 week 4', 'Verdieping HC + start huiswerkopopdracht 2 (pi 7)', 'Werkcollege', 'Werkcollege en starten met huiswerkopdracht 2, het bouwen van een alarmsysteem.', 'not started', '30');
     """, """
-    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (1, 'tm02', 1, 'Test activity 2', 'Second testing activity for student1', 'Class', 'This is part of test data', 'started', '50');
+    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (1, 'tm02', 1, 'Zelfstudie reader week 4', 'Reader op blackboard lezen', 'Lezen', 'Lezen: business models for the internet of things', 'started', '50');
     """, """
-    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (2, 'tm02', 1, 'Test activity 3', 'First testing activity for student2', 'Assignment', 'This is part of test data', 'started', '120');
+    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (2, 'tm02', 1, 'IoT Alarm afmaken', 'Afronden en testen IoT alarm systeem', 'Opdracht', 'Nieuwe functionaliteit getest', 'started', '120');
     """, """
-    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (2, 'tm02', 1, 'Test activity 1', 'Second testing activity', 'Class', 'This is part of test data', 'completed', '15');
+    INSERT INTO study_activity (studentid, moduleid, teacherid, title, description, category, notes, activity_status, time_est) VALUES (2, 'tm02', 1, 'Hoorcollege week 1', 'Introductie hoorcollege week 1', 'Hoorcollege', 'Feedback op hoorcollege', 'completed', '15');
     """, """
-    INSERT INTO study_session (activityid, start_time, session_date) VALUES (1, '15:35', '2018-01-17');
+    INSERT INTO study_session (activityid, start_time, session_date) VALUES (1, '1517234758', '2018-01-17');
     """, """
-    UPDATE study_session SET stop_time = '15:35' WHERE id = 1;
+    UPDATE study_session SET stop_time = '1517235457' WHERE id = 1;
     """, """
-    INSERT INTO study_session (activityid, start_time, session_date) VALUES (2, '08:00', '2018-01-18');
+    INSERT INTO study_session (activityid, start_time, session_date) VALUES (2, '1517238511', '2018-01-18');
     """, """
-    INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '23:30', '2018-01-20');
+    INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '1517236872', '2018-01-20');
     """, """
-    UPDATE study_session SET stop_time = '01:00' WHERE id = 3;
+    UPDATE study_session SET stop_time = '1517239546' WHERE id = 3;
     """, """
-    INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '16:40', '2018-01-25');
+    INSERT INTO study_session (activityid, start_time, session_date) VALUES (3, '1517243783', '2018-01-25');
     """, """
     INSERT INTO session_data (sessionid, sessiondata, data_type) VALUES (1, '[["k", 1516287762.809912], ["j", 1516287762.9790134], ["f", 1516287763.1300404]]', 'Keystrokes');
     """, """

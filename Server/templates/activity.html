@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block header_text %}Activity: {{ page_vars['title'] }} ({{ page_vars['activity_status']}}){% endblock %}
+
+{% block main_content %}
+<div class="list-group">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <b>Description:</b><br> {{ page_vars['description'] }}
+        </div>
+    </div>
+    <br>
+    <div class="row">
+        <div class="col-sm-4">
+            <b>Module</b>
+        </div>
+        <div class="col-sm-8">
+            <b>: </b>{{ page_vars['moduleid'] }}
+        </div>
+
+        <div class="col-sm-4">
+            <b>Type</b>
+        </div>
+        <div class="col-sm-8">
+            <b>: </b>{{ page_vars['category'] }}
+        </div>
+
+        <div class="col-sm-4">
+            <b>Teacher</b>
+        </div>
+        <div class="col-sm-8">
+            <b>: </b>{{ page_vars['teacherid'] }}
+        </div>
+
+        <div class="col-sm-4">
+            <b>Time estimate</b>
+        </div>
+        <div class="col-sm-8">
+            <b>: </b>{{ page_vars['time_est'] }}
+        </div>
+
+        <div class="col-sm-4">
+            <b>Time used</b>
+        </div>
+        <div class="col-sm-8">
+            <b>: </b>{{ page_vars['time'] }}
+        </div>
+    </div>
+    <hr>
+    <div class="row">
+        <div class="col-sm-12">
+            <b>Notes:</b><br> {{ page_vars['notes'] }}
+        </div>
+    </div>
+    <hr>
+    <b>Sessions:</b>
+    <table class="table table-hover">
+        <tr>
+            <th>#</th>
+            <th>Start Time</th>
+            <th>Stop Time</th>
+            <th>Date</th>
+        </tr>
+        {% for item in page_vars['sessions'] %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>{{ item['starttime'] }}</td>
+                <td>{{ item['stoptime'] }}</td>
+                <td>{{ item['date'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <hr>
+    <b>Data:</b>
+    <table class="table table-hover">
+        <tr>
+            <th>#</th>
+            <th>Session</th>
+            <th>Data Type</th>
+            <th>Data</th>
+        </tr>
+        {% for item in page_vars['data'] %}
+            <tr>
+                <td>{{ item['id'] }}</td>
+                <td>{{ item['sessionid'] }}</td>
+                <td>{{ item['datatype'] }}</td>
+                <td>{{ item['data'] }}</td>
+            </tr>
+        {% endfor %}
+    </table>
+</div>
+
+{% endblock %}

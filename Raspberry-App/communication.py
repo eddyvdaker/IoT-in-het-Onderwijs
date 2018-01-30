@@ -1,31 +1,54 @@
-from os import curdir
-from os.path import join as pjoin
-from http.server import BaseHTTPRequestHandler, HTTPServer
+#!/usr/bin/python
+ # -*- coding: utf-8 -*-
 
-class StoreHandler(BaseHTTPRequestHandler):
+import http.client
+import json
+import time
+from queue import Empty
 
-	def do_GET(self):
-		if self.path == '/':
-			with open(self.index, 'rb') as fh:
-				self.send_response(200)
-				self.send_header('Content-type', self.content_type(self.path))
-				self.end_headers()
-				self.wfile.write(fh.read())
-		elif self.path == '/':
-			with open(self.index, 'rb') as fh:
-				self.send_response(200)
-				self.send_header('Content-type', self.content_type(self.path))
-				self.end_headers()
-				self.wfile.write(fh.read())
+class communication:
+	"""
+	facilitates communication beteewn the pi and the server
+	"""
+	def __init__(self):
+		self.conn = http.client.HTTPConnection("ts.guydols.nl:5000")
 
-	def do_POST(self):
-		if self.path == '/store.json':
-			length = self.headers['content-length']
-			data = self.rfile.read(int(length))
-			with open(self.store_path, 'w') as fh:
-				fh.write(data.decode())
-			self.send_response(200)
+	# get session information
+	def getCommand(self):
+		self.conn.request("GET","/check_session?id=1")
+		res = self.conn.getresponse()
+		if res.status == 200:
+			data = json.loads(res.read())
+			return data
+		else:
+			return None
 
-def main():
-	server = HTTPServer(('0.0.0.0', 8080), StoreHandler)
-	server.serve_forever()
+	# post the sensor data after session is done
+	def postData(self,data):
+		headers = {'Content-type': 'application/json'}
+		self.conn.request("POST","/upload_data",data,headers)
+		res = self.conn.getresponse()
+		if res.status == 200:
+			return True
+		else:
+			return False
+
+# main loop to check for commands and convert data to json for the post
+def main(comms_in, comms_out):
+	comm = communication()
+	while True:
+		cmd = comm.getCommand()
+		if cmd == None:
+			pass
+		else:
+			comms_in.put(cmd)
+		try:
+			data = comms_out.get_nowait()
+			json_data = {
+			"data_type": data[0],
+			"sessiondata": data[1],
+			"sessionid":data[2]}
+			comm.postData(json.dumps(json_data))
+		except Empty:
+			pass
+		time.sleep(5)

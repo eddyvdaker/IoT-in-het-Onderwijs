@@ -2,18 +2,34 @@
 StudyBuddy Server
 """
 
-from flask import abort, Flask, jsonify, request
+from flask import abort, Flask, jsonify, redirect, render_template, request
 from os import remove
 
+from dashboard import *
 from database import *
 from queries import *
 
 app = Flask(__name__)
 
 
+@app.route('/user/<username>', methods=['GET'])
+def student_page(username):
+    page_vars = get_student_page_vars(username, db)
+    return render_template('overview.html', page_vars=page_vars)
+
+
+@app.route('/activity/<activity>', methods=['GET'])
+def activity_page(activity):
+    page_vars = get_activity_page_vars(activity, db)
+    return render_template('activity.html', page_vars=page_vars)
+
+
+# Returns the not logged in homepage, in this PoC it only contains
+# a field for selecting a user, in the real version of this system
+# it will be a login screen.
 @app.route('/', methods=['GET'])
 def homepage():
-    pass
+    return render_template('base.html', page_vars='')
 
 
 """
@@ -50,6 +66,8 @@ def get_study_event():
     return jsonify(cleaned_data)
 
 
+# Get details of all study events of an student ID
+# Used as 'GET /events?id=<studentID>'
 @app.route('/events', methods=['GET'])
 def get_study_events():
     student_id = request.args.get('id')
@@ -232,6 +250,20 @@ def upload_data():
     return jsonify(data)
 
 
+# Update the note field for a set event
+# Used as 'POST /event_notes {'id': <event_id>, 'notes': <notes>}'
+@app.route('/event_notes', methods=['POST'])
+def update_event_notes():
+    if not request.json:
+        abort(400)
+    data = request.json
+
+    query = update_activity_notes_query(data['id'], data['notes'])
+    execute_write_query(db, query)
+
+    return jsonify(data)
+
+
 """
 Posting New Data API Calls
 """
@@ -305,4 +337,5 @@ if __name__ == '__main__':
     print('Database initialized...')
 
     print('Starting Flask application...')
+    app.static_folder = 'static'
     app.run(host='0.0.0.0')
