@@ -4,7 +4,6 @@ This modules contains all code used to render the GUI and make it functional.
 from Trackers.KeyboardLogger import KeyboardLogger
 from Trackers.WindowLogger import WindowLogger
 from tkinter import *
-from time import strftime
 from urllib.request import urlopen, Request
 import json
 
@@ -13,6 +12,7 @@ IP = 'ts.guydols.nl'
 URL = f'http://{IP}:5000/'
 
 LOGGERS_TO_RUN = None
+
 
 class ScrollableFrame(Frame):
 
@@ -80,6 +80,7 @@ class App:
                                    width=45, bg='#dddddd', anchor='w',
                                    padx=5, pady=3)
             checkbox.grid(row=i, sticky='w')
+            checkbox.select()
             self.loggers_to_run.append(var)
 
     def check_api(self):
