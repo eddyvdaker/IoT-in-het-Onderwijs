@@ -8,7 +8,9 @@ import RPi.GPIO as GPIO
 import lib.dht11 as dht11
 import lib.ky038 as ky038
 import lib.ky018 as ky018
+import lib.camera as cam
 import time
+import picamera
 
 
 class runDHT11:
@@ -127,6 +129,39 @@ class runKY018:
 			if self.running:
 				time.sleep(self.interval)
 
+class runCam:
+	"""
+	Temperature and humidity sensor class
+	this class run in it's own thread collecting data
+	until it get the command to stop
+	"""
+
+	def __init__(self,cin,cout,interval):
+		self.cin = cin
+		self.cout = cout
+		self.interval = interval
+		self.running = True
+		self.camera = picamera.PiCamera()
+		self.main()
+
+	# try to read data from the dht11 sensors
+	# interval = get result every x time
+	def getData(self,interval):
+		initial_time = time.time()
+		while time.time()-initial_time < interval:
+			camera.capture('images/test.png')
+		return
+
+	# collect the data and send it back when done
+	def main(self):
+		while self.running == True:
+			try:
+				cmd = self.cin.get_nowait()
+				if cmd == "stop":
+					self.running = False
+			except Empty:
+				pass
+
 # this runs from the main thread to create the threads for the sensors
 # if recording is started when it's done the threads give their data back and get destroyed
 def main(sensors_in,sensors_out):
@@ -139,9 +174,11 @@ def main(sensors_in,sensors_out):
 				dht11in = Queue()
 				ky038in = Queue()
 				ky018in = Queue()
+				camin = Queue()
 				dht11out = Queue()
 				ky038out = Queue()
 				ky018out = Queue()
+				camout = Queue()
 
 				dht11_thread = Thread(target=runDHT11,
 				name="dht11_thread",args=(dht11in, dht11out, interval, ))
@@ -149,20 +186,25 @@ def main(sensors_in,sensors_out):
 				name="ky038_thread",args=(ky038in, ky038out, interval, ))
 				ky018_thread = Thread(target=runKY018,
 				name="ky018_thread",args=(ky018in, ky018out, interval, ))
+				cam_thread = Thread(target=runCam,
+				name="ky018_thread",args=(camin, camout, interval, ))
 
 				dht11_thread.start()
 				ky038_thread.start()
 				ky018_thread.start()
+				cam_thread.start()
 
 			elif cmd == "stop":
 
 				dht11in.put("stop")
 				ky038in.put("stop")
 				ky018in.put("stop")
+				camin.put("stop")
 
 				dht11_thread.join()
 				ky038_thread.join()
 				ky018_thread.join()
+				cam_thread.join()
 
 				dht11data = dht11out.get()
 				ky038data = ky038out.get()
